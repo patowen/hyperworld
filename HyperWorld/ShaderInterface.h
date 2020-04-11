@@ -2,8 +2,7 @@
 #include <glad/glad.h>
 #include <Eigen/Dense>
 
-class ShaderInterface
-{
+class ShaderInterface {
 public:
 	ShaderInterface() {
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);

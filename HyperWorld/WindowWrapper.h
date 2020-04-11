@@ -11,8 +11,7 @@
 
 class ContextWrapper;
 
-class WindowWrapper
-{
+class WindowWrapper {
 public:
 	WindowWrapper(const ContextWrapper &contextWrapper) : contextWrapper(contextWrapper) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

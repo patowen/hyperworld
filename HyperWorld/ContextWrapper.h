@@ -5,20 +5,17 @@
 #include <stdexcept>
 #include <string>
 
-class ContextWrapper
-{
+class ContextWrapper {
 public:
 	ContextWrapper() {
-		glfwSetErrorCallback([](int error, const char* description)
-		{
+		glfwSetErrorCallback([](int error, const char* description) {
 			fprintf(stderr, "Error: %s\n", description);
 			std::string full_description = "Error " + std::to_string(error) + ": " + std::string(description);
 			throw std::runtime_error(full_description.c_str());
 		});
 
 		int success = glfwInit();
-		if (!success)
-		{
+		if (!success) {
 			throw std::runtime_error("Failed to initialize GLFW");
 		}
 	}

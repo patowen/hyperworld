@@ -4,8 +4,7 @@
 
 enum class ModelHandle {TRIANGLE};
 
-class ModelBank
-{
+class ModelBank {
 public:
 	ModelBank(const ShaderInterface &shaderInterface) {
 		std::vector<Vertex> vertices {Vertex(-0.693f, -0.4f, 1.f, 0.f, 0.f), Vertex(0.693f, -0.4f, 0.f, 1.f, 0.f), Vertex(0.f, 0.8f, 0.f, 0.f, 1.f)};
@@ -19,4 +18,3 @@ public:
 private:
 	std::unordered_map<ModelHandle, std::unique_ptr<Model>> models;
 };
-

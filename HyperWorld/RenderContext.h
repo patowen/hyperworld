@@ -8,56 +8,44 @@
 
 class Model;
 
-class RenderContext
-{
+class RenderContext {
 public:
 	RenderContext(ShaderInterface &shaderInterface, ModelBank &modelBank)
-		: projection(Matrix4d::Identity()), modelView(Matrix4d::Identity()), shaderInterface(shaderInterface), modelBank(modelBank)
-	{
-	}
+		: projection(Matrix4d::Identity()), modelView(Matrix4d::Identity()), shaderInterface(shaderInterface), modelBank(modelBank) {}
 
-	void setProjection(const Matrix4d &projection)
-	{
+	void setProjection(const Matrix4d &projection) {
 		this->projection = projection;
 	}
 
-	void setModelView(const Matrix4d &modelView)
-	{
+	void setModelView(const Matrix4d &modelView) {
 		this->modelView = modelView;
 	}
 
-	const Matrix4d &getModelView() const
-	{
+	const Matrix4d &getModelView() const {
 		return this->modelView;
 	}
 
-	void addModelView(const Matrix4d &modelView)
-	{
+	void addModelView(const Matrix4d &modelView) {
 		this->modelView *= modelView;
 	}
 
-	ModelBank &getModelBank() const
-	{
+	ModelBank &getModelBank() const {
 		return modelBank;
 	}
 
-	ShaderInterface &getShaderInterface() const
-	{
+	ShaderInterface &getShaderInterface() const {
 		return shaderInterface;
 	}
 
-	void useShader()
-	{
+	void useShader() {
 		shaderInterface.use();
 	}
 
-	void setUniforms()
-	{
+	void setUniforms() {
 		shaderInterface.setMvp((projection * modelView).cast<float>());
 	}
 
-	void render(ModelHandle model)
-	{
+	void render(ModelHandle model) {
 		modelBank.render(model);
 	}
 
@@ -67,4 +55,3 @@ private:
 	ShaderInterface &shaderInterface;
 	ModelBank &modelBank;
 };
-
