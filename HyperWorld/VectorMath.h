@@ -5,11 +5,18 @@ using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
 using Vector3d = Eigen::Vector3d;
 using Vector4d = Eigen::Matrix<double, 4, 1, Eigen::DontAlign>;
 
-namespace VectorMath
-{
+namespace VectorMath {
+	inline Matrix4d perspective(double x, double y, double zNear, double zFar) {
+		Matrix4d result;
+		result << 2.0*zNear/x, 0.0, 0.0, 0.0,
+			0.0, 2.0*zNear/y, 0.0, 0.0,
+			0.0, 0.0, -(zFar + zNear) / (zFar - zNear), -2.0*(zFar * zNear) / (zFar - zNear),
+			0.0, 0.0, -1.0, 0.0;
+		return result;
+	}
+
 	// Moves the origin to the specified position
-	inline Matrix4d translation(const Vector4d &v)
-	{
+	inline Matrix4d translation(const Vector4d &v) {
 		Matrix4d result;
 		double x = v.x(), y = v.y(), z = v.z(), w = v.w();
 		double f = 1.0 / (w + 1.0);
@@ -21,8 +28,7 @@ namespace VectorMath
 	}
 
 	// Does an ideal rotation about (0, 0, 1, 1)
-	inline Matrix4d horoRotation(double x, double y)
-	{
+	inline Matrix4d horoRotation(double x, double y) {
 		double sqrSum = 0.5*(x*x + y*y);
 		Matrix4d result;
 		result << 1, 0, x, x,
@@ -32,8 +38,7 @@ namespace VectorMath
 		return result;
 	}
 
-	inline Matrix4d rotation(Vector3d axis, double theta)
-	{
+	inline Matrix4d rotation(Vector3d axis, double theta) {
 		Matrix4d result = Matrix4d::Identity();
 		double x = axis.x(), y = axis.y(), z = axis.z();
 		double xx = x*x, yy = y*y, zz = z*z, yz = y*z, zx = z*x, xy = x*y;
@@ -56,15 +61,12 @@ namespace VectorMath
 	
 	// Moves the origin in the specified direction with a distance proportional
 	// to the magnitude of the argument
-	inline Matrix4d displacement(const Vector3d &displacement)
-	{
+	inline Matrix4d displacement(const Vector3d &displacement) {
 		double norm = displacement.norm();
-		if (norm == 0)
-		{
+		if (norm == 0) {
 			return Matrix4d::Identity();
 		}
 		double scaleFactor = sinh(norm) / norm;
-		double w = cosh(norm);
 
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));
 	}

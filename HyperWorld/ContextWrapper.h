@@ -29,6 +29,4 @@ public:
 
 	ContextWrapper(const ContextWrapper&) = delete;
 	ContextWrapper& operator=(const ContextWrapper&) = delete;
-	ContextWrapper(ContextWrapper&&) = delete;
-	ContextWrapper& operator=(ContextWrapper&&) = delete;
 };

@@ -4,15 +4,12 @@
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
-#include <Eigen/Dense>
-
+#include "VectorMath.h"
 #include "ShaderInterface.h"
 #include "ModelBank.h"
 #include "RenderContext.h"
 
 class ContextWrapper;
-
-using Eigen::Matrix4f;
 
 class WindowWrapper
 {
@@ -42,14 +39,12 @@ public:
 	}
 
 	void render(int width, int height, RenderContext &context) {
-		float ratio = width / (float)height;
+		double ratio = width / (double)height;
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		context.setModelView(VectorMath::rotation({0, 0, 1}, glfwGetTime()));
-		Matrix4d p;
-		p << 1.f/ratio, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
-		context.setProjection(p);
+		context.setProjection(VectorMath::perspective(ratio, 1, 1, 100));
 
 		context.useShader();
 		context.setUniforms();

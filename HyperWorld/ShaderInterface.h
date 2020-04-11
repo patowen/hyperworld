@@ -57,7 +57,7 @@ const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"out vec3 color;\n"
 	"void main()\n"
 	"{\n"
-	"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+	"    gl_Position = MVP * vec4(vPos, -5.0, 1.0);\n"
 	"    color = vCol;\n"
 	"}\n";
 
