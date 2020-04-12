@@ -7,6 +7,7 @@
 using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
 using Vector3d = Eigen::Vector3d;
 using Vector4d = Eigen::Matrix<double, 4, 1, Eigen::DontAlign>;
+using Vector2d = Eigen::Matrix<double, 2, 1, Eigen::DontAlign>;
 
 namespace VectorMath {
 	inline Matrix4d perspective(double x, double y, double zNear, double zFar) {

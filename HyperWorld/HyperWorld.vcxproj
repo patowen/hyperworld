@@ -142,6 +142,7 @@
     <ClInclude Include="GhostCamera.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelBank.h" />
+    <ClInclude Include="ModelBuilder.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="ShaderInterface.h" />
     <ClInclude Include="VectorMath.h" />

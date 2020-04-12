@@ -47,5 +47,8 @@
     <ClInclude Include="ModelBank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ModelBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
