@@ -40,7 +40,7 @@ public:
 	void render(int width, int height, RenderContext &context) {
 		double ratio = width / (double)height;
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		context.setModelView(VectorMath::euclideanTranslation({0.0, 0.0, -2.0}) * VectorMath::rotation({0, .6, .8}, glfwGetTime()));
 		context.setProjection(VectorMath::perspective(ratio, 1, 1, 100));
@@ -54,6 +54,8 @@ public:
 		ShaderInterface shaderInterface;
 		ModelBank modelBank(shaderInterface);
 		RenderContext context(shaderInterface, modelBank);
+
+		glEnable(GL_DEPTH_TEST);
 
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
