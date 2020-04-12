@@ -1,5 +1,8 @@
 #pragma once
+#pragma warning( push )
+#pragma warning( disable : 26812 26450 26495 )
 #include <Eigen/Dense>
+#pragma warning( pop )
 
 using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
 using Vector3d = Eigen::Vector3d;
@@ -12,6 +15,15 @@ namespace VectorMath {
 			0.0, 2.0*zNear/y, 0.0, 0.0,
 			0.0, 0.0, -(zFar + zNear) / (zFar - zNear), -2.0*(zFar * zNear) / (zFar - zNear),
 			0.0, 0.0, -1.0, 0.0;
+		return result;
+	}
+
+	inline Matrix4d euclideanTranslation(const Vector3d &v) {
+		Matrix4d result;
+		result << 1.0, 0.0, 0.0, v.x(),
+			0.0, 1.0, 0.0, v.y(),
+			0.0, 0.0, 1.0, v.z(),
+			0.0, 0.0, 0.0, 1.0;
 		return result;
 	}
 
@@ -38,7 +50,7 @@ namespace VectorMath {
 		return result;
 	}
 
-	inline Matrix4d rotation(Vector3d axis, double theta) {
+	inline Matrix4d rotation(const Vector3d &axis, double theta) {
 		Matrix4d result = Matrix4d::Identity();
 		double x = axis.x(), y = axis.y(), z = axis.z();
 		double xx = x*x, yy = y*y, zz = z*z, yz = y*z, zx = z*x, xy = x*y;

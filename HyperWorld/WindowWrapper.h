@@ -42,7 +42,7 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		context.setModelView(VectorMath::rotation({0, 0, 1}, glfwGetTime()));
+		context.setModelView(VectorMath::euclideanTranslation({0.0, 0.0, -2.0}) * VectorMath::rotation({0, .6, .8}, glfwGetTime()));
 		context.setProjection(VectorMath::perspective(ratio, 1, 1, 100));
 
 		context.useShader();

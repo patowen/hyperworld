@@ -1,6 +1,6 @@
 #pragma once
 #include <glad/glad.h>
-#include <Eigen/Dense>
+#include "VectorMath.h"
 
 class ShaderInterface {
 public:
@@ -52,11 +52,11 @@ private:
 const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"uniform mat4 MVP;\n"
 	"in vec3 vCol;\n"
-	"in vec2 vPos;\n"
+	"in vec4 vPos;\n"
 	"out vec3 color;\n"
 	"void main()\n"
 	"{\n"
-	"    gl_Position = MVP * vec4(vPos, -5.0, 1.0);\n"
+	"    gl_Position = MVP * vPos;\n"
 	"    color = vCol;\n"
 	"}\n";
 
