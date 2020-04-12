@@ -11,8 +11,8 @@ using Vector4d = Eigen::Matrix<double, 4, 1, Eigen::DontAlign>;
 namespace VectorMath {
 	inline Matrix4d perspective(double x, double y, double zNear, double zFar) {
 		Matrix4d result;
-		result << 2.0*zNear/x, 0.0, 0.0, 0.0,
-			0.0, 2.0*zNear/y, 0.0, 0.0,
+		result << 2.0/x, 0.0, 0.0, 0.0,
+			0.0, 2.0/y, 0.0, 0.0,
 			0.0, 0.0, -(zFar + zNear) / (zFar - zNear), -2.0*(zFar * zNear) / (zFar - zNear),
 			0.0, 0.0, -1.0, 0.0;
 		return result;
@@ -81,5 +81,7 @@ namespace VectorMath {
 		double scaleFactor = sinh(norm) / norm;
 
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));
+
+		return translation(translateVector);
 	}
 }

@@ -17,7 +17,7 @@ public:
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-		window = glfwCreateWindow(640, 480, "Simple example", nullptr, nullptr);
+		window = glfwCreateWindow(640, 480, "Hyperworld", nullptr, nullptr);
 		if (!window) {
 			throw std::runtime_error("Failed to create window");
 		}
@@ -42,8 +42,8 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		context.setModelView(VectorMath::euclideanTranslation({0.0, 0.0, -2.0}) * VectorMath::rotation({0, .6, .8}, glfwGetTime()));
-		context.setProjection(VectorMath::perspective(ratio, 1, 1, 100));
+		context.setModelView(VectorMath::displacement({0.0, 0.0, -2.0}) * VectorMath::rotation({0, .6, .8}, glfwGetTime()));
+		context.setProjection(VectorMath::perspective(ratio, 1, 0.1, 100));
 
 		context.useShader();
 		context.setUniforms();

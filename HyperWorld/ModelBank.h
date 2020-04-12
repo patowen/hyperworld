@@ -17,6 +17,8 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 	float goldenRatio = (1.0f + sqrtf(5.0f)) / 2.0f;
 	float q = s / goldenRatio, p = s * goldenRatio;
 
+	float factor = 2.0f / (1.0f - s * s * 3.0f);
+
 	std::array<std::array<std::array<float, 3>, 5>, 12> table = {{
 		{{{ 0,  q,  p}, { s,  s,  s}, { q,  p,  0}, {-q,  p,  0}, {-s,  s,  s}}},
 		{{{ 0,  q, -p}, {-s,  s, -s}, {-q,  p,  0}, { q,  p,  0}, { s,  s, -s}}},
@@ -43,7 +45,12 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 		std::array<float, 3> faceColor {faceNum / 12.0f, 1.0f, 0.0f};
 		GLuint i = static_cast<GLuint>(vertices.size());
 		for (const auto& faceVertex : face) {
-			vertices.emplace_back(std::array<float, 4> {faceVertex[0], faceVertex[1], faceVertex[2], 1.0f}, faceColor);
+			vertices.emplace_back(std::array<float, 4> {
+				faceVertex[0] * factor,
+				faceVertex[1] * factor,
+				faceVertex[2] * factor,
+				factor - 1.0f
+			}, faceColor);
 		}
 
 		std::array<GLuint, 9> nextElements {i, i+1, i+2, i, i+2, i+3, i, i+3, i+4};
