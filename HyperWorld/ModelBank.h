@@ -4,9 +4,9 @@
 
 Model makeHelloWorldTriangle(const ShaderInterface& shaderInterface) {
 	std::vector<Vertex> vertices {
-		Vertex({-0.693f, -0.4f, 0.0f, 1.0f}, {1.f, 0.f, 0.f}),
-		Vertex({0.693f, -0.4f, 0.0f, 1.0f}, {0.f, 1.f, 0.f}),
-		Vertex({0.f, 0.8f, 0.0f, 1.0f}, {0.f, 0.f, 1.f}),
+		Vertex({-0.693f, -0.4f, 0.0f, 1.0f}, {1.f, 0.f, 0.f, 1.0f}, {0.0f, 0.0f}),
+		Vertex({0.693f, -0.4f, 0.0f, 1.0f}, {0.f, 1.f, 0.f, 1.0f}, {1.0f, 0.0f}),
+		Vertex({0.f, 0.8f, 0.0f, 1.0f}, {0.f, 0.f, 1.f, 1.0f}, {0.0f, 1.0f}),
 	};
 
 	return Model(shaderInterface, vertices, {0, 1, 2});
@@ -42,7 +42,7 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 	int faceNum = 0;
 
 	for (const auto& face : table) {
-		std::array<float, 3> faceColor {faceNum / 12.0f, 1.0f, 0.0f};
+		std::array<float, 2> faceColor {faceNum / 12.0f, 1.0f};
 		GLuint i = static_cast<GLuint>(vertices.size());
 		for (const auto& faceVertex : face) {
 			vertices.emplace_back(std::array<float, 4> {
@@ -50,7 +50,7 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 				faceVertex[1] * factor,
 				faceVertex[2] * factor,
 				factor - 1.0f
-			}, faceColor);
+			}, std::array<float, 4> {0, 0, 0, 0}, faceColor);
 		}
 
 		std::array<GLuint, 9> nextElements {i, i+1, i+2, i, i+2, i+3, i, i+3, i+4};

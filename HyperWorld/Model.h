@@ -9,9 +9,10 @@
 
 class Vertex {
 public:
-	Vertex(std::array<float, 4> pos, std::array<float, 3> col): pos(pos), col(col) {}
+	Vertex(std::array<float, 4> pos, std::array<float, 4> normal, std::array<float, 2> texCoord): pos(pos), normal(normal), texCoord(texCoord) {}
 	std::array<float, 4> pos;
-	std::array<float, 3> col;
+	std::array<float, 4> normal;
+	std::array<float, 2> texCoord;
 };
 
 class Model {
@@ -28,10 +29,12 @@ public:
 		numVertices = static_cast<GLsizei>(vertices.size());
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * numVertices, vertices.data(), GL_STATIC_DRAW);
 
-		glEnableVertexAttribArray(shaderInterface.vposLocation);
-		glVertexAttribPointer(shaderInterface.vposLocation, 4, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, pos)));
-		glEnableVertexAttribArray(shaderInterface.vcolLocation);
-		glVertexAttribPointer(shaderInterface.vcolLocation, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, col)));
+		glEnableVertexAttribArray(shaderInterface.vPosLocation);
+		glVertexAttribPointer(shaderInterface.vPosLocation, 4, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, pos)));
+		glEnableVertexAttribArray(shaderInterface.vNormalLocation);
+		glVertexAttribPointer(shaderInterface.vNormalLocation, 4, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, normal)));
+		glEnableVertexAttribArray(shaderInterface.vTexCoordLocation);
+		glVertexAttribPointer(shaderInterface.vTexCoordLocation, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, texCoord)));
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
 		numElements = static_cast<GLsizei>(elements.size());

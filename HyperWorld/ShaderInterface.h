@@ -19,8 +19,9 @@ public:
 		glLinkProgram(program);
 
 		mvpLocation = glGetUniformLocation(program, "MVP");
-		vposLocation = glGetAttribLocation(program, "vPos");
-		vcolLocation = glGetAttribLocation(program, "vCol");
+		vPosLocation = glGetAttribLocation(program, "vPos");
+		vNormalLocation = glGetAttribLocation(program, "vNormal");
+		vTexCoordLocation = glGetAttribLocation(program, "vTexCoord");
 	}
 
 	~ShaderInterface() {
@@ -45,26 +46,30 @@ private:
 	static const char* fragmentShaderText;
 
 	GLuint vertexShader, fragmentShader, program;
-	GLint mvpLocation, vposLocation, vcolLocation;
+	GLint mvpLocation, vPosLocation, vNormalLocation, vTexCoordLocation;
 	friend class Model;
 };
 
 const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"uniform mat4 MVP;\n"
-	"in vec3 vCol;\n"
 	"in vec4 vPos;\n"
-	"out vec3 color;\n"
+	"in vec4 vNormal;\n"
+	"in vec2 vTexCoord;\n"
+	"out vec4 normal;\n"
+	"out vec2 texCoord;\n"
 	"void main()\n"
 	"{\n"
 	"    gl_Position = MVP * vPos;\n"
-	"    color = vCol;\n"
+	"    normal = vNormal;\n"
+	"    texCoord = vTexCoord;\n"
 	"}\n";
 
 const char* ShaderInterface::fragmentShaderText =
 	"#version 150\n"
-	"in vec3 color;\n"
+	"in vec4 normal;\n"
+	"in vec2 texCoord;\n"
 	"out vec4 fragColor;"
 	"void main()\n"
 	"{\n"
-	"    fragColor = vec4(color, 1.0);\n"
+	"    fragColor = vec4(texCoord, 0.5, 1.0);\n"
 	"}\n";

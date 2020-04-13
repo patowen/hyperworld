@@ -9,6 +9,8 @@ using Vector3d = Eigen::Vector3d;
 using Vector4d = Eigen::Matrix<double, 4, 1, Eigen::DontAlign>;
 using Vector2d = Eigen::Matrix<double, 2, 1, Eigen::DontAlign>;
 
+constexpr auto M_TAU = 6.2831853071795864769252867665590057683943;
+
 namespace VectorMath {
 	inline Matrix4d perspective(double x, double y, double zNear, double zFar) {
 		Matrix4d result;
