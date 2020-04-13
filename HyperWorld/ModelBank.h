@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "Model.h"
+#include "ModelBuilder.h"
 
 Model makeHelloWorldTriangle(const ShaderInterface& shaderInterface) {
 	std::vector<Vertex> vertices {
@@ -39,27 +40,24 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> elements;
 
-	int faceNum = 0;
+	ModelBuilder builder;
 
 	for (const auto& face : table) {
-		std::array<float, 2> faceColor {faceNum / 12.0f, 1.0f};
-		GLuint i = static_cast<GLuint>(vertices.size());
-		for (const auto& faceVertex : face) {
-			vertices.emplace_back(std::array<float, 4> {
-				faceVertex[0] * factor,
-				faceVertex[1] * factor,
-				faceVertex[2] * factor,
+		std::vector<Vector4d> faceVertices;
+
+		for (const auto& faceVertexData : face) {
+			faceVertices.emplace_back(
+				faceVertexData[0] * factor,
+				faceVertexData[1] * factor,
+				faceVertexData[2] * factor,
 				factor - 1.0f
-			}, std::array<float, 4> {0, 0, 0, 0}, faceColor);
+			);
 		}
 
-		std::array<GLuint, 9> nextElements {i, i+1, i+2, i, i+2, i+3, i, i+3, i+4};
-		elements.insert(elements.end(), nextElements.cbegin(), nextElements.cend());
-
-		++faceNum;
+		builder.addPolygonFace(faceVertices);
 	}
 
-	return Model(shaderInterface, vertices, elements);
+	return builder.build(shaderInterface);
 }
 
 enum class ModelHandle {TRIANGLE};

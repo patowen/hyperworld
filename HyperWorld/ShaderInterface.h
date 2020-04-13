@@ -71,5 +71,5 @@ const char* ShaderInterface::fragmentShaderText =
 	"out vec4 fragColor;"
 	"void main()\n"
 	"{\n"
-	"    fragColor = vec4(texCoord, 0.5, 1.0);\n"
+	"    fragColor = vec4(mod(floor(texCoord * 10), 2) * 0.5 + 0.5, 0.0, 1.0);\n"
 	"}\n";
