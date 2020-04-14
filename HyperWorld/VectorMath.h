@@ -73,6 +73,14 @@ namespace VectorMath {
 
 		return result;
 	}
+
+	inline Vector4d hyperbolicNormal(Vector4d v0, Vector4d v1, Vector4d v2) {
+		double x =   v0[1]*v1[2]*v2[3] + v0[2]*v1[3]*v2[1] + v0[3]*v1[1]*v2[2] - v0[1]*v1[3]*v2[2] - v0[2]*v1[1]*v2[3] - v0[3]*v1[2]*v2[1];
+		double y = -(v0[0]*v1[2]*v2[3] + v0[2]*v1[3]*v2[0] + v0[3]*v1[0]*v2[2] - v0[0]*v1[3]*v2[2] - v0[2]*v1[0]*v2[3] - v0[3]*v1[2]*v2[0]);
+		double z =   v0[0]*v1[1]*v2[3] + v0[1]*v1[3]*v2[0] + v0[3]*v1[0]*v2[1] - v0[0]*v1[3]*v2[1] - v0[1]*v1[0]*v2[3] - v0[3]*v1[1]*v2[0];
+		double w = -(v0[0]*v1[1]*v2[2] + v0[1]*v1[2]*v2[0] + v0[2]*v1[0]*v2[1] - v0[0]*v1[2]*v2[1] - v0[1]*v1[0]*v2[2] - v0[2]*v1[1]*v2[0]);
+		return Vector4d(x, y, z, -w);
+	}
 	
 	// Moves the origin in the specified direction with a distance proportional
 	// to the magnitude of the argument

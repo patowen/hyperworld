@@ -33,9 +33,11 @@ public:
 	void addPolygonFace(std::vector<Vector4d> positions) {
 		auto n = positions.size();
 
+		Vector4d normal = VectorMath::hyperbolicNormal(positions[0], positions[n / 3], positions[(n * 2) / 3]);
+
 		std::vector<GLuint> vertices;
 		for (int i = 0; i < n; ++i) {
-			vertices.push_back(addVertex(positions[i], Vector4d::Zero(), Vector2d(0.5 + 0.5 * cos(i * M_TAU / n), 0.5 + 0.5 * sin(i * M_TAU / n))));
+			vertices.push_back(addVertex(positions[i], normal, Vector2d(0.5 + 0.5 * cos(i * M_TAU / n), 0.5 + 0.5 * sin(i * M_TAU / n))));
 		}
 
 		for (decltype(n) i = 1; i < n - 1; ++i) {
