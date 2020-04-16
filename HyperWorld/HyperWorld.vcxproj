@@ -145,6 +145,8 @@
     <ClInclude Include="ModelBuilder.h" />
     <ClInclude Include="RenderContext.h" />
     <ClInclude Include="ShaderInterface.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureBank.h" />
     <ClInclude Include="VectorMath.h" />
     <ClInclude Include="WindowWrapper.h" />
   </ItemGroup>

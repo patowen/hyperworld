@@ -7,6 +7,7 @@
 #include "VectorMath.h"
 #include "ShaderInterface.h"
 #include "ModelBank.h"
+#include "TextureBank.h"
 #include "RenderContext.h"
 
 class ContextWrapper;
@@ -53,6 +54,7 @@ public:
 	void renderLoop() {
 		ShaderInterface shaderInterface;
 		ModelBank modelBank(shaderInterface);
+		TextureBank textureBank;
 		RenderContext context(shaderInterface, modelBank);
 
 		glEnable(GL_DEPTH_TEST);

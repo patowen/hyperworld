@@ -83,6 +83,7 @@ const char* ShaderInterface::vertexShaderText = "#version 150\n"
 
 const char* ShaderInterface::fragmentShaderText =
 	"#version 150\n"
+	"uniform sampler2D texture_sampler;"
 	"uniform vec4 light_pos;\n"
 	"in vec4 pos_raw;\n"
 	"in vec4 normal_raw;\n"
@@ -95,5 +96,5 @@ const char* ShaderInterface::fragmentShaderText =
 	"    vec4 light_dir_raw = light_pos + pos * (-light_pos.w * pos.w + dot(light_pos.xyz, pos.xyz));\n"
 	"    vec4 light_dir = light_dir_raw / sqrt(-light_dir_raw.w * light_dir_raw.w + dot(light_dir_raw.xyz, light_dir_raw.xyz));\n"
 	"    float directness = -light_dir.w * normal.w + dot(light_dir.xyz, normal.xyz);\n"
-	"    fragColor = vec4(vec3(mod(floor(texCoord * 10), 2) * 0.5 + 0.5, 0.0) * directness, 1.0);\n"
+	"    fragColor = vec4(texture(texture_sampler, texCoord).rgb * directness, 1.0);\n"
 	"}\n";
