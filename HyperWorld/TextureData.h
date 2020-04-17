@@ -5,6 +5,7 @@
 
 class TextureData {
 public:
+	TextureData(int width, int height): width(width), height(height) {}
 	int width;
 	int height;
 	std::vector<GLubyte> data;

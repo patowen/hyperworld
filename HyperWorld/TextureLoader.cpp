@@ -78,9 +78,7 @@ namespace TextureLoader {
 
 		png_destroy_read_struct(&png, &info, NULL);
 
-		TextureData result;
-		result.width = width;
-		result.height = height;
+		TextureData result(width, height);
 
 		for (int y=0; y<height; ++y) {
 			for (int x=0; x<width; ++x) {
@@ -90,7 +88,6 @@ namespace TextureLoader {
 			}
 		}
 
-		printf("%d, %d", result.width, result.height);
 		return result;
 	}
 }
