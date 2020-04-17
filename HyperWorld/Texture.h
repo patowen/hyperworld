@@ -10,13 +10,16 @@ public:
 		glBindTexture(GL_TEXTURE_2D, texture);
 
 		std::vector<GLubyte> textureData;
-		for (int i=0; i<128*128; ++i) {
-			textureData.push_back(255);
-			textureData.push_back(255);
-			textureData.push_back(0);
+		for (int i=0; i<128; ++i) {
+			for (int j=0; j<128; ++j) {
+				GLubyte color = ((((i / 32) + (j / 32)) % 2) + 128) * 127;
+				textureData.push_back(color);
+				textureData.push_back(color);
+				textureData.push_back(color);
+			}
 		}
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data());
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData.data());
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 

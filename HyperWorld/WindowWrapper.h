@@ -58,6 +58,7 @@ public:
 		RenderContext context(shaderInterface, modelBank);
 
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_FRAMEBUFFER_SRGB);
 
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
