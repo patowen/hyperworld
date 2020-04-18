@@ -92,9 +92,9 @@ const char* ShaderInterface::fragmentShaderText =
 	"void main()\n"
 	"{\n"
 	"    vec4 pos = pos_raw / sqrt(pos_raw.w * pos_raw.w - dot(pos_raw.xyz, pos_raw.xyz));\n"
-	"    vec4 normal = normal_raw / sqrt(-normal_raw.w * normal_raw.w + dot(normal_raw.xyz, normal_raw.xyz));\n"
+	"    vec4 normal = (normal_raw / sqrt(-normal_raw.w * normal_raw.w + dot(normal_raw.xyz, normal_raw.xyz))) * (gl_FrontFacing ? 1.0 : -1.0);\n"
 	"    vec4 light_dir_raw = light_pos + pos * (-light_pos.w * pos.w + dot(light_pos.xyz, pos.xyz));\n"
 	"    vec4 light_dir = light_dir_raw / sqrt(-light_dir_raw.w * light_dir_raw.w + dot(light_dir_raw.xyz, light_dir_raw.xyz));\n"
-	"    float directness = -light_dir.w * normal.w + dot(light_dir.xyz, normal.xyz);\n"
+	"    float directness = max(0, -light_dir.w * normal.w + dot(light_dir.xyz, normal.xyz));\n"
 	"    fragColor = vec4(texture(texture_sampler, texCoord).rgb * directness, 1.0);\n"
 	"}\n";

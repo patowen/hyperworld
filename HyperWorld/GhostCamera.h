@@ -4,13 +4,59 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 1) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0) {
 	}
 
 	void step(double dt, const UserInput& userInput) {
-		if (userInput.isPressed(inputs.backwards)) {
-			pos *= VectorMath::displacement(vel * dt);
+		Vector3d goalVel(0, 0, 0);
+		if (userInput.isPressed(inputs.forwards)) {
+			goalVel(2) -= 1;
 		}
+		if (userInput.isPressed(inputs.backwards)) {
+			goalVel(2) += 1;
+		}
+		if (userInput.isPressed(inputs.left)) {
+			goalVel(0) -= 1;
+		}
+		if (userInput.isPressed(inputs.right)) {
+			goalVel(0) += 1;
+		}
+		if (userInput.isPressed(inputs.down)) {
+			goalVel(1) -= 1;
+		}
+		if (userInput.isPressed(inputs.up)) {
+			goalVel(1) += 1;
+		}
+
+		double norm = goalVel.norm();
+		if (norm > 1) {
+			goalVel /= norm;
+		}
+		goalVel *= 2;
+
+		double maxChange = 4 * dt;
+		Vector3d velDiff = goalVel - vel;
+		double velDiffNorm = velDiff.norm();
+		if (velDiffNorm < maxChange) {
+			vel = goalVel;
+		} else {
+			vel += velDiff / velDiffNorm * maxChange;
+		}
+
+		pos *= VectorMath::displacement(vel * dt);
+
+		Vector2d mouseLook = userInput.getMouseLook();
+		pos *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002);
+		pos *= VectorMath::rotation(Vector3d(0, 1, 0), -mouseLook(0) * 0.002);
+
+		double zRotation = 0;
+		if (userInput.isPressed(inputs.clockwise)) {
+			zRotation -= 1;
+		}
+		if (userInput.isPressed(inputs.counterclockwise)) {
+			zRotation += 1;
+		}
+		pos *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
 	}
 
 	Matrix4d getTransform() {
@@ -29,6 +75,8 @@ private:
 		InputHandle right = KeyboardButton(GLFW_KEY_D);
 		InputHandle up = KeyboardButton(GLFW_KEY_W);
 		InputHandle down = KeyboardButton(GLFW_KEY_S);
+		InputHandle clockwise = KeyboardButton(GLFW_KEY_E);
+		InputHandle counterclockwise = KeyboardButton(GLFW_KEY_Q);
 	};
 
 	Inputs inputs;

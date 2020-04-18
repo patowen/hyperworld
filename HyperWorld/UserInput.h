@@ -64,12 +64,17 @@ private:
 
 class UserInput {
 public:
-	UserInput(GLFWwindow* window): window(window) {}
+	UserInput(GLFWwindow* window, Vector2d mouseLook): window(window), mouseLook(mouseLook) {}
 
 	bool isPressed(const InputHandle& inputHandle) const {
 		return inputHandle.inputButton->isPressed(window);
 	}
 
+	Vector2d getMouseLook() const {
+		return mouseLook;
+	}
+
 private:
 	GLFWwindow* window;
+	Vector2d mouseLook;
 };

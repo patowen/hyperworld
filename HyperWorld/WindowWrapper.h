@@ -52,13 +52,18 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		UserInput userInput(window);
-		camera.step(0.01, userInput);
+		Vector2d mouseLook(0, 0);
+		if (isMouseCaptured()) {
+			glfwGetCursorPos(window, &mouseLook(0), &mouseLook(1));
+			glfwSetCursorPos(window, 0, 0);
+		}
+
+		UserInput userInput(window, mouseLook);
+		camera.step(1.0/60.0, userInput);
 
 		context.resetModelView();
 		context.addModelView(camera.getTransform());
 		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
-		context.addModelView(VectorMath::rotation({0, .6, .8}, glfwGetTime()));
 		context.setProjection(VectorMath::perspective(ratio, 1, 0.1, 100));
 
 		context.useShader();
@@ -77,14 +82,6 @@ public:
 
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
-
-			if (isMouseCaptured()) {
-				double mouseX, mouseY;
-				glfwGetCursorPos(window, &mouseX, &mouseY);
-				std::cout << mouseX << ", " << mouseY << "\n";
-				glfwSetCursorPos(window, 0, 0);
-			}
-
 			glfwGetFramebufferSize(window, &width, &height);
 			glViewport(0, 0, width, height);
 			render(width, height, context);
@@ -106,6 +103,7 @@ public:
 	void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
 		if (!isMouseCaptured()) {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glfwSetCursorPos(window, 0, 0);
 		}
 	}
 
