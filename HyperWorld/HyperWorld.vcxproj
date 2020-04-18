@@ -79,7 +79,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glfw-3.2.1.bin.WIN64\include;C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -93,7 +93,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glfw-3.2.1.bin.WIN64\include;C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -109,7 +109,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glfw-3.2.1.bin.WIN64\include;C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glfw-3.2.1.bin.WIN64\include;C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Patrick\Alpha\Code\Libraries\glad\include;C:\Users\Patrick\Alpha\Code\Libraries\eigen-eigen-323c052e1731;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include;C:\Users\Patrick\Alpha\Code\Libraries\lpng1637;C:\Users\Patrick\Alpha\Code\Libraries\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -155,6 +155,7 @@
     <ClInclude Include="TextureBank.h" />
     <ClInclude Include="TextureData.h" />
     <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="UserInput.h" />
     <ClInclude Include="VectorMath.h" />
     <ClInclude Include="WindowWrapper.h" />
   </ItemGroup>

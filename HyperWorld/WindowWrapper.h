@@ -9,6 +9,8 @@
 #include "ModelBank.h"
 #include "TextureBank.h"
 #include "RenderContext.h"
+#include "GhostCamera.h"
+#include "UserInput.h"
 
 class ContextWrapper;
 
@@ -25,9 +27,16 @@ public:
 		glfwSetWindowUserPointer(window, this);
 
 		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, GLFW_TRUE);
+			static_cast<WindowWrapper*>(glfwGetWindowUserPointer(window))->keyCallback(window, key, scancode, action, mods);
 		});
+
+		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+			static_cast<WindowWrapper*>(glfwGetWindowUserPointer(window))->mouseCallback(window, button, action, mods);
+		});
+
+		if (glfwRawMouseMotionSupported()) {
+			glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		}
 
 		glfwMakeContextCurrent(window);
 		gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
@@ -43,7 +52,13 @@ public:
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		context.setModelView(VectorMath::displacement({0.0, 0.0, -2.0}) * VectorMath::rotation({0, .6, .8}, glfwGetTime()));
+		UserInput userInput(window);
+		camera.step(0.01, userInput);
+
+		context.resetModelView();
+		context.addModelView(camera.getTransform());
+		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
+		context.addModelView(VectorMath::rotation({0, .6, .8}, glfwGetTime()));
 		context.setProjection(VectorMath::perspective(ratio, 1, 0.1, 100));
 
 		context.useShader();
@@ -63,6 +78,13 @@ public:
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
 
+			if (isMouseCaptured()) {
+				double mouseX, mouseY;
+				glfwGetCursorPos(window, &mouseX, &mouseY);
+				std::cout << mouseX << ", " << mouseY << "\n";
+				glfwSetCursorPos(window, 0, 0);
+			}
+
 			glfwGetFramebufferSize(window, &width, &height);
 			glViewport(0, 0, width, height);
 			render(width, height, context);
@@ -71,10 +93,31 @@ public:
 		}
 	}
 
+	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+			if (isMouseCaptured()) {
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			} else {
+				glfwSetWindowShouldClose(window, GLFW_TRUE);
+			}
+		}
+	}
+
+	void mouseCallback(GLFWwindow* window, int button, int action, int mods) {
+		if (!isMouseCaptured()) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+	}
+
+	bool isMouseCaptured() {
+		return glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+	}
+
 	WindowWrapper(const WindowWrapper&) = delete;
 	WindowWrapper& operator=(const WindowWrapper&) = delete;
 
 private:
 	GLFWwindow* window;
 	const ContextWrapper &contextWrapper;
+	GhostCamera camera;
 };

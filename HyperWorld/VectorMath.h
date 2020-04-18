@@ -74,6 +74,17 @@ namespace VectorMath {
 		return result;
 	}
 
+	inline Matrix4d isometricInverse(const Matrix4d& matrix) {
+		Matrix4d result;
+
+		result << matrix(0, 0), matrix(1, 0), matrix(2, 0), -matrix(3, 0),
+			matrix(0, 1), matrix(1, 1), matrix(2, 1), -matrix(3, 1),
+			matrix(0, 2), matrix(1, 2), matrix(2, 2), -matrix(3, 2),
+			-matrix(0, 3), -matrix(1, 3), -matrix(2, 3), matrix(3, 3);
+
+		return result;
+	}
+
 	inline Vector4d hyperbolicNormal(Vector4d v0, Vector4d v1, Vector4d v2) {
 		double x =   v0[1]*v1[2]*v2[3] + v0[2]*v1[3]*v2[1] + v0[3]*v1[1]*v2[2] - v0[1]*v1[3]*v2[2] - v0[2]*v1[1]*v2[3] - v0[3]*v1[2]*v2[1];
 		double y = -(v0[0]*v1[2]*v2[3] + v0[2]*v1[3]*v2[0] + v0[3]*v1[0]*v2[2] - v0[0]*v1[3]*v2[2] - v0[2]*v1[0]*v2[3] - v0[3]*v1[2]*v2[0]);
@@ -86,13 +97,8 @@ namespace VectorMath {
 	// to the magnitude of the argument
 	inline Matrix4d displacement(const Vector3d &displacement) {
 		double norm = displacement.norm();
-		if (norm == 0) {
-			return Matrix4d::Identity();
-		}
-		double scaleFactor = sinh(norm) / norm;
-
+		double scaleFactor = norm < 1e-30 ? 1.0 : sinh(norm) / norm;
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));
-
 		return translation(translateVector);
 	}
 }
