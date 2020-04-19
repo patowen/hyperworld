@@ -75,7 +75,7 @@ public:
 		ShaderInterface shaderInterface;
 		ModelBank modelBank(shaderInterface);
 		TextureBank textureBank;
-		RenderContext context(shaderInterface, modelBank);
+		RenderContext context(shaderInterface, modelBank, textureBank);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);

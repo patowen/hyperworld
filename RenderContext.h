@@ -10,8 +10,8 @@ class Model;
 
 class RenderContext {
 public:
-	RenderContext(ShaderInterface &shaderInterface, ModelBank &modelBank)
-		: projection(Matrix4d::Identity()), modelView(Matrix4d::Identity()), shaderInterface(shaderInterface), modelBank(modelBank) {}
+	RenderContext(ShaderInterface &shaderInterface, ModelBank &modelBank, TextureBank &textureBank)
+		: projection(Matrix4d::Identity()), modelView(Matrix4d::Identity()), shaderInterface(shaderInterface), modelBank(modelBank), textureBank(textureBank) {}
 
 	void setProjection(const Matrix4d &projection) {
 		this->projection = projection;
@@ -51,6 +51,7 @@ public:
 	}
 
 	void render(ModelHandle model) {
+		textureBank.bind(TextureHandle::PERLIN);
 		modelBank.render(model);
 	}
 
@@ -59,4 +60,5 @@ private:
 	Matrix4d modelView;
 	ShaderInterface &shaderInterface;
 	ModelBank &modelBank;
+	TextureBank &textureBank;
 };

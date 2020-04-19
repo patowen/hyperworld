@@ -21,6 +21,10 @@ public:
 	Texture(const Texture&) = delete;
 	Texture& operator=(const Texture&) = delete;
 
+	void bind() {
+		glBindTexture(GL_TEXTURE_2D, texture);
+	}
+
 private:
 	GLuint texture;
 };

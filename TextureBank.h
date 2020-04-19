@@ -14,6 +14,10 @@ public:
 		textures[TextureHandle::PERLIN] = std::make_unique<Texture>(data);
 	}
 
+	void bind(TextureHandle textureHandle) {
+		textures[textureHandle]->bind();
+	}
+
 private:
 	std::unordered_map<TextureHandle, std::unique_ptr<Texture>> textures;
 };
