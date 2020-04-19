@@ -1,4 +1,3 @@
-#include <glad/glad.h>
 #include <png.h>
 #include <cstdio>
 #include <vector>

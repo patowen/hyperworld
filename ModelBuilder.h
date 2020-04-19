@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <glad/glad.h>
+#include "glad.h"
 #include "VectorMath.h"
 #include "Model.h"
 
