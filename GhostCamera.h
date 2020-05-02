@@ -4,15 +4,20 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(true) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(true), slow(false) {
 	}
 
 	void prepareCallbacks(InputListener& inputListener) {
 		inputs.rotationLock.setCallback(inputListener, [this](){onToggleRotationLock();});
+		inputs.toggleSpeed.setCallback(inputListener, [this](){onToggleSpeed();});
 	}
 
 	void onToggleRotationLock() {
 		rotationLock = !rotationLock;
+	}
+
+	void onToggleSpeed() {
+		slow = !slow;
 	}
 
 	void step(double dt, const UserInput& userInput) {
@@ -40,9 +45,9 @@ public:
 		if (norm > 1) {
 			goalVel /= norm;
 		}
-		goalVel *= 2;
+		goalVel *= slow ? 0.2 : 2;
 
-		double maxChange = 4 * dt;
+		double maxChange = (slow ? 0.8 : 4) * dt;
 		Vector3d velDiff = goalVel - vel;
 		double velDiffNorm = velDiff.norm();
 		if (velDiffNorm < maxChange) {
@@ -75,6 +80,7 @@ private:
 	Matrix4d pos;
 	Vector3d vel; //Relative to camera
 	bool rotationLock;
+	bool slow;
 
 	class Inputs {
 	public:
@@ -86,6 +92,9 @@ private:
 		InputHandle down = KeyboardButton(GLFW_KEY_S);
 		InputHandle clockwise = KeyboardButton(GLFW_KEY_E);
 		InputHandle counterclockwise = KeyboardButton(GLFW_KEY_Q);
+
+		InputHandle toggleSpeed = KeyboardButton(GLFW_KEY_LEFT_SHIFT);
+
 		InputHandle rotationLock = KeyboardButton(GLFW_KEY_LEFT_CONTROL);
 	};
 
