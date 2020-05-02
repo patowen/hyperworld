@@ -50,8 +50,11 @@ public:
 		shaderInterface.setLightPos((VectorMath::isometricInverse(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
 	}
 
+	void setTexture(TextureHandle texture) {
+		textureBank.bind(texture);
+	}
+
 	void render(ModelHandle model) {
-		textureBank.bind(TextureHandle::PERLIN);
 		modelBank.render(model);
 	}
 

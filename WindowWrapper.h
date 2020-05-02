@@ -64,11 +64,14 @@ public:
 		context.resetModelView();
 		context.addModelView(camera.getTransform());
 		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
-		context.setProjection(VectorMath::perspective(ratio, 1, 0.1, 100));
+		context.setProjection(VectorMath::perspective(ratio, 1, 0.01, 10));
 
 		context.useShader();
 		context.setUniforms();
-		context.render(ModelHandle::TRIANGLE);
+		context.setTexture(TextureHandle::TILE);
+		context.render(ModelHandle::HOROSPHERE);
+		context.setTexture(TextureHandle::PERLIN);
+		context.render(ModelHandle::DODECAHEDRON);
 	}
 
 	void renderLoop() {

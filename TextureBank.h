@@ -5,13 +5,13 @@
 #include "Texture.h"
 #include "TextureLoader.h"
 
-enum class TextureHandle {PERLIN};
+enum class TextureHandle {PERLIN, TILE};
 
 class TextureBank {
 public:
 	TextureBank() {
-		TextureData data = TextureLoader::loadTexture("perlin.png");
-		textures[TextureHandle::PERLIN] = std::make_unique<Texture>(data);
+		textures[TextureHandle::PERLIN] = std::make_unique<Texture>(TextureLoader::loadTexture("perlin.png"));
+		textures[TextureHandle::TILE] = std::make_unique<Texture>(TextureLoader::loadTexture("tile.png"));
 	}
 
 	void bind(TextureHandle textureHandle) {
