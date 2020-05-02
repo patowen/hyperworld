@@ -80,6 +80,8 @@ public:
 		TextureBank textureBank;
 		RenderContext context(shaderInterface, modelBank, textureBank);
 
+		camera.prepareCallbacks(inputListener);
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
 
@@ -100,6 +102,8 @@ public:
 			} else {
 				glfwSetWindowShouldClose(window, GLFW_TRUE);
 			}
+		} else if (action == GLFW_PRESS) {
+			inputListener.keyboardKeyPressed(key);
 		}
 	}
 
@@ -107,6 +111,8 @@ public:
 		if (!isMouseCaptured()) {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			glfwSetCursorPos(window, 0, 0);
+		} else if (action == GLFW_PRESS) {
+			inputListener.mouseButtonPressed(button);
 		}
 	}
 
@@ -121,4 +127,5 @@ private:
 	GLFWwindow* window;
 	const ContextWrapper &contextWrapper;
 	GhostCamera camera;
+	InputListener inputListener;
 };

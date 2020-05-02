@@ -4,7 +4,15 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(true) {
+	}
+
+	void prepareCallbacks(InputListener& inputListener) {
+		inputs.rotationLock.setCallback(inputListener, [this](){onToggleRotationLock();});
+	}
+
+	void onToggleRotationLock() {
+		rotationLock = !rotationLock;
 	}
 
 	void step(double dt, const UserInput& userInput) {
@@ -43,7 +51,7 @@ public:
 			vel += velDiff / velDiffNorm * maxChange;
 		}
 
-		pos *= VectorMath::displacement(vel * dt);
+		handleMovement(dt);
 
 		Vector2d mouseLook = userInput.getMouseLook();
 		pos *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002);
@@ -66,6 +74,7 @@ public:
 private:
 	Matrix4d pos;
 	Vector3d vel; //Relative to camera
+	bool rotationLock;
 
 	class Inputs {
 	public:
@@ -77,7 +86,17 @@ private:
 		InputHandle down = KeyboardButton(GLFW_KEY_S);
 		InputHandle clockwise = KeyboardButton(GLFW_KEY_E);
 		InputHandle counterclockwise = KeyboardButton(GLFW_KEY_Q);
+		InputHandle rotationLock = KeyboardButton(GLFW_KEY_LEFT_CONTROL);
 	};
 
 	Inputs inputs;
+
+	void handleMovement(double dt) {
+		if (rotationLock) {
+			pos *= VectorMath::displacement(Vector3d(0, 0, vel(2)) * dt);
+			pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
+		} else {
+			pos *= VectorMath::displacement(vel * dt);
+		}
+	}
 };
