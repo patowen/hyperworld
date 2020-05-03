@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include "Model.h"
 #include "ModelBuilder.h"
+#include "Tessellation.h"
 
 Model makeHelloWorldTriangle(const ShaderInterface& shaderInterface) {
 	std::vector<Vertex> vertices {

@@ -4,7 +4,7 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(true), slow(false) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(false), slow(false) {
 	}
 
 	void prepareCallbacks(InputListener& inputListener) {
