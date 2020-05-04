@@ -99,6 +99,9 @@ public:
 	ModelBank(const ShaderInterface& shaderInterface) {
 		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron(shaderInterface));
 		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere(shaderInterface));
+
+		Tessellation tessellation;
+		tessellation.testTessellation();
 	}
 
 	void render(ModelHandle model) {
