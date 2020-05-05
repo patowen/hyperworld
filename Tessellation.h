@@ -8,7 +8,7 @@ class Tessellation {
 public:
 	void testTessellation() {
 		createSeedFace();
-		for (unsigned i=0; i<3; ++i) {
+		for (unsigned i=0; i<15; ++i) {
 			std::cout << faces.size() << ", " << vertices.size() << "\n";
 			size_t currentCount = faces.size();
 			std::cout << "Current data: \n";
@@ -33,7 +33,7 @@ public:
 
 private:
 	static constexpr unsigned n = 3;
-	std::array<unsigned, n> shape = {2, 2, 2}; // {2, 4, 5}
+	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
 
 	class Face;
 	class Vertex;
@@ -196,10 +196,6 @@ private:
 		} else {
 			getVertex(lowerVertex).addLowerFace(newFace);
 			getVertex(upperVertex).addUpperFace(newFace);
-		}
-
-		if (newFace.index == 7) {
-			std::cout << "Final stretch\n";
 		}
 
 		// Vertex saturation prep
