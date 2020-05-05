@@ -94,63 +94,30 @@ private:
 		Vertex(unsigned type, unsigned numAdjacentFaces, FaceRef startFace):
 			type(type),
 			adjacentFaces(numAdjacentFaces),
-			freeSlotMin(0),
-			freeSlotMax(numAdjacentFaces - 1) {
+			fanBoundaries(numAdjacentFaces - 1, 0) {
 			adjacentFaces[numAdjacentFaces - 1] = startFace;
 		}
 
 		void addFace(FaceRef face, int direction) {
-			if (direction == 1) {
-				addUpperFace(face);
-			} else {
-				addLowerFace(face);
+			if (isSaturated()) {
+				throw std::runtime_error("Tried to add to a saturated vertex");
 			}
+
+			adjacentFaces[fanBoundaries[direction] + (-direction - 1) / 2] = face;
+			fanBoundaries[direction] -= direction;
 		}
 
 		bool isSaturated() {
-			return freeSlotMin == freeSlotMax;
+			return fanBoundaries[1] == fanBoundaries[-1];
 		}
 
 		FaceRef getFace(int direction) {
-			if (direction == 1) {
-				return getUpperFace();
-			} else {
-				return getLowerFace();
-			}
+			return adjacentFaces[(fanBoundaries[direction] + adjacentFaces.size() + (direction - 1) / 2) % adjacentFaces.size()];
 		}
 
 		int type;
 		std::vector<FaceRef> adjacentFaces;
-
-		unsigned freeSlotMin;
-		unsigned freeSlotMax;
-
-	private:
-		void addUpperFace(FaceRef face) {
-			if (isSaturated()) {
-				throw std::runtime_error("Tried to add to a saturated vertex");
-			}
-
-			adjacentFaces[freeSlotMax - 1] = face;
-			freeSlotMax--;
-		}
-
-		void addLowerFace(FaceRef face) {
-			if (isSaturated()) {
-				throw std::runtime_error("Tried to add to a saturated vertex");
-			}
-
-			adjacentFaces[freeSlotMin] = face;
-			freeSlotMin++;
-		}
-
-		FaceRef getUpperFace() {
-			return adjacentFaces[freeSlotMax];
-		}
-
-		FaceRef getLowerFace() {
-			return adjacentFaces[(freeSlotMin + adjacentFaces.size() - 1) % adjacentFaces.size()];
-		}
+		PolarityArray<unsigned> fanBoundaries;
 	};
 
 	Face& getFace(FaceRef face) {
@@ -174,7 +141,7 @@ private:
 			if (adj.isNull()) {
 				std::cout << "n, ";
 			} else {
-				std::cout << adj.index << "(" << (getVertex(adj).freeSlotMax - getVertex(adj).freeSlotMin) << "), ";
+				std::cout << adj.index << "(" << (getVertex(adj).fanBoundaries[1] - getVertex(adj).fanBoundaries[-1]) << "), ";
 			}
 		}
 		std::cout << "\n";
