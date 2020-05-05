@@ -11,17 +11,11 @@ public:
 		for (unsigned i=0; i<15; ++i) {
 			std::cout << faces.size() << ", " << vertices.size() << "\n";
 			size_t currentCount = faces.size();
-			std::cout << "Current data: \n";
-			for (size_t j=0; j<currentCount; ++j) {
-				inspectFace(FaceRef(j));
-			}
 
-			std::cout << "\nNew data: \n";
 			for (size_t j=0; j<currentCount; ++j) {
 				for (unsigned k=0; k<n; ++k) {
 					if (faces[j].adjacentFaces[k].index == FaceRef::nullRef()) {
 						FaceRef face = createAdjacentFace(FaceRef(j), k);
-						inspectFace(face);
 					}
 				}
 			}
@@ -88,6 +82,33 @@ private:
 			adjacentFaces[numAdjacentFaces - 1] = startFace;
 		}
 
+		void addFace(FaceRef face, int direction) {
+			if (direction == 1) {
+				addUpperFace(face);
+			} else {
+				addLowerFace(face);
+			}
+		}
+
+		bool isSaturated() {
+			return freeSlotMin == freeSlotMax;
+		}
+
+		FaceRef getFace(int direction) {
+			if (direction == 1) {
+				return getUpperFace();
+			} else {
+				return getLowerFace();
+			}
+		}
+
+		int type;
+		std::vector<FaceRef> adjacentFaces;
+
+		unsigned freeSlotMin;
+		unsigned freeSlotMax;
+
+	private:
 		void addUpperFace(FaceRef face) {
 			if (isSaturated()) {
 				throw std::runtime_error("Tried to add to a saturated vertex");
@@ -106,10 +127,6 @@ private:
 			freeSlotMin++;
 		}
 
-		bool isSaturated() {
-			return freeSlotMin == freeSlotMax;
-		}
-
 		FaceRef getUpperFace() {
 			return adjacentFaces[freeSlotMax];
 		}
@@ -117,12 +134,6 @@ private:
 		FaceRef getLowerFace() {
 			return adjacentFaces[(freeSlotMin + adjacentFaces.size() - 1) % adjacentFaces.size()];
 		}
-
-		int type;
-		std::vector<FaceRef> adjacentFaces;
-		
-		unsigned freeSlotMin;
-		unsigned freeSlotMax;
 	};
 
 	Face& getFace(FaceRef face) {
@@ -190,13 +201,8 @@ private:
 		getFace(newFace).adjacentVertices[upperVertexIndex] = upperVertex;
 
 		// Vertex to face
-		if (orientation == 1) {
-			getVertex(lowerVertex).addUpperFace(newFace);
-			getVertex(upperVertex).addLowerFace(newFace);
-		} else {
-			getVertex(lowerVertex).addLowerFace(newFace);
-			getVertex(upperVertex).addUpperFace(newFace);
-		}
+		getVertex(lowerVertex).addFace(newFace, orientation);
+		getVertex(upperVertex).addFace(newFace, -orientation);
 
 		// Vertex saturation prep
 		unsigned descendingVertexIndex = lowerVertexIndex;
@@ -211,7 +217,7 @@ private:
 			if (!getVertex(descendingVertex).isSaturated()) {
 				break;
 			}
-			FaceRef existingFace = orientation == 1 ? getVertex(descendingVertex).getLowerFace() : getVertex(descendingVertex).getUpperFace();
+			FaceRef existingFace = getVertex(descendingVertex).getFace(-orientation);
 			descendingEdge = (descendingEdge + n - 1u) % n;
 			descendingVertexIndex = (descendingVertexIndex + n - 1u) % n;
 			descendingVertex = getFace(existingFace).adjacentVertices[descendingVertexIndex];
@@ -220,11 +226,7 @@ private:
 			getFace(existingFace).adjacentFaces[descendingEdge] = newFace;
 			getFace(newFace).adjacentVertices[descendingVertexIndex] = descendingVertex;
 			if (descendingVertexIndex != ascendingVertexIndex) {
-				if (orientation == 1) {
-					getVertex(descendingVertex).addUpperFace(newFace);
-				} else {
-					getVertex(descendingVertex).addLowerFace(newFace);
-				}
+				getVertex(descendingVertex).addFace(newFace, orientation);
 			}
 		}
 
@@ -233,7 +235,7 @@ private:
 			if (!getVertex(ascendingVertex).isSaturated()) {
 				break;
 			}
-			FaceRef existingFace = orientation == 1 ? getVertex(ascendingVertex).getUpperFace() : getVertex(ascendingVertex).getLowerFace();
+			FaceRef existingFace = getVertex(ascendingVertex).getFace(orientation);
 			ascendingEdge = (ascendingEdge + 1u) % n;
 			ascendingVertexIndex = (ascendingVertexIndex + 1u) % n;
 			ascendingVertex = getFace(existingFace).adjacentVertices[ascendingVertexIndex];
@@ -242,11 +244,7 @@ private:
 			getFace(existingFace).adjacentFaces[ascendingEdge] = newFace;
 			getFace(newFace).adjacentVertices[ascendingVertexIndex] = ascendingVertex;
 			if (ascendingVertexIndex != descendingVertexIndex) {
-				if (orientation == 1) {
-					getVertex(ascendingVertex).addLowerFace(newFace);
-				} else {
-					getVertex(ascendingVertex).addUpperFace(newFace);
-				}
+				getVertex(ascendingVertex).addFace(newFace, -orientation);
 			}
 		}
 
