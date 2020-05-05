@@ -26,6 +26,23 @@ public:
 	}
 
 private:
+	template<typename T>
+	class PolarityArray {
+	public:
+		PolarityArray(T elemPos, T elemNeg): data {elemPos, elemNeg} {}
+		T& operator[](int pole) { return data[(1 - pole) / 2]; }
+		const T& operator[](int pole) const { return data[(pole + 1) / 2]; }
+
+		template<typename Ret, typename F>
+		auto select(F f) -> PolarityArray<Ret> {
+			return PolarityArray<Ret>(f(data[0]), f(data[1]));
+		}
+	private:
+		std::array<T, 2> data;
+	};
+
+	std::array<int, 2> poles = {1, -1};
+
 	static constexpr unsigned n = 3;
 	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
 
@@ -176,9 +193,12 @@ private:
 		return newFace;
 	}
 
+	void incrementIndex(unsigned& index, int pole) {
+		index = (index + n + pole) % n;
+	}
+
 	FaceRef createAdjacentFace(FaceRef face, unsigned edge) {
-		unsigned lowerVertexIndex = (edge + 1u) % n;
-		unsigned upperVertexIndex = (edge + 2u) % n;
+		PolarityArray<unsigned> seedVertexIndices((edge + 2u) % n, (edge + 1u) % n);
 
 		int orientation = -getFace(face).orientation;
 
@@ -194,63 +214,41 @@ private:
 		getFace(face).adjacentFaces[edge] = newFace;
 		getFace(newFace).adjacentFaces[edge] = face;
 
-		// Face to vertex
-		VertexRef lowerVertex = getFace(face).adjacentVertices[lowerVertexIndex];
-		VertexRef upperVertex = getFace(face).adjacentVertices[upperVertexIndex];
-		getFace(newFace).adjacentVertices[lowerVertexIndex] = lowerVertex;
-		getFace(newFace).adjacentVertices[upperVertexIndex] = upperVertex;
-
-		// Vertex to face
-		getVertex(lowerVertex).addFace(newFace, orientation);
-		getVertex(upperVertex).addFace(newFace, -orientation);
-
-		// Vertex saturation prep
-		unsigned descendingVertexIndex = lowerVertexIndex;
-		unsigned ascendingVertexIndex = upperVertexIndex;
-		VertexRef descendingVertex = lowerVertex;
-		VertexRef ascendingVertex = upperVertex;
-		unsigned descendingEdge = edge;
-		unsigned ascendingEdge = edge;
-
-		// Lower vertex saturation
-		while (descendingVertexIndex != ascendingVertexIndex) {
-			if (!getVertex(descendingVertex).isSaturated()) {
-				break;
-			}
-			FaceRef existingFace = getVertex(descendingVertex).getFace(-orientation);
-			descendingEdge = (descendingEdge + n - 1u) % n;
-			descendingVertexIndex = (descendingVertexIndex + n - 1u) % n;
-			descendingVertex = getFace(existingFace).adjacentVertices[descendingVertexIndex];
-
-			getFace(newFace).adjacentFaces[descendingEdge] = existingFace;
-			getFace(existingFace).adjacentFaces[descendingEdge] = newFace;
-			getFace(newFace).adjacentVertices[descendingVertexIndex] = descendingVertex;
-			if (descendingVertexIndex != ascendingVertexIndex) {
-				getVertex(descendingVertex).addFace(newFace, orientation);
-			}
+		// Face to vertex / vertex to face
+		auto seedVertices = seedVertexIndices.select<VertexRef>([this, face](auto index){ return getFace(face).adjacentVertices[index]; });
+		for (int pole : poles) {
+			getFace(newFace).adjacentVertices[seedVertexIndices[pole]] = seedVertices[pole];
+			getVertex(seedVertices[pole]).addFace(newFace, -pole * orientation);
 		}
 
-		// Upper vertex saturation
-		while (ascendingVertexIndex != descendingVertexIndex) {
-			if (!getVertex(ascendingVertex).isSaturated()) {
-				break;
-			}
-			FaceRef existingFace = getVertex(ascendingVertex).getFace(orientation);
-			ascendingEdge = (ascendingEdge + 1u) % n;
-			ascendingVertexIndex = (ascendingVertexIndex + 1u) % n;
-			ascendingVertex = getFace(existingFace).adjacentVertices[ascendingVertexIndex];
+		// Vertex saturation prep
+		PolarityArray<unsigned> walkingVertexIndices = seedVertexIndices;
+		PolarityArray<VertexRef> walkingVertices = seedVertices;
+		PolarityArray<unsigned> walkingEdges(edge, edge);
 
-			getFace(newFace).adjacentFaces[ascendingEdge] = existingFace;
-			getFace(existingFace).adjacentFaces[ascendingEdge] = newFace;
-			getFace(newFace).adjacentVertices[ascendingVertexIndex] = ascendingVertex;
-			if (ascendingVertexIndex != descendingVertexIndex) {
-				getVertex(ascendingVertex).addFace(newFace, -orientation);
+		// Vertex saturation
+		for (int pole : poles) {
+			while (walkingVertexIndices[pole] != walkingVertexIndices[-pole]) {
+				if (!getVertex(walkingVertices[pole]).isSaturated()) {
+					break;
+				}
+				FaceRef existingFace = getVertex(walkingVertices[pole]).getFace(pole * orientation);
+				incrementIndex(walkingEdges[pole], pole);
+				incrementIndex(walkingVertexIndices[pole], pole);
+				walkingVertices[pole] = getFace(existingFace).adjacentVertices[walkingVertexIndices[pole]];
+
+				getFace(newFace).adjacentFaces[walkingEdges[pole]] = existingFace;
+				getFace(existingFace).adjacentFaces[walkingEdges[pole]] = newFace;
+				getFace(newFace).adjacentVertices[walkingVertexIndices[pole]] = walkingVertices[pole];
+				if (walkingVertexIndices[pole] != walkingVertexIndices[-pole]) {
+					getVertex(walkingVertices[pole]).addFace(newFace, -pole * orientation);
+				}
 			}
 		}
 
 		// Freshly-created vertices
-		if (ascendingVertexIndex != descendingVertexIndex) {
-			for (unsigned newVertexIndex = (ascendingVertexIndex + 1u) % n; newVertexIndex != descendingVertexIndex; newVertexIndex = (newVertexIndex + 1u) % n) {
+		if (walkingVertexIndices[1] != walkingVertexIndices[-1]) {
+			for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; newVertexIndex != walkingVertexIndices[-1]; incrementIndex(newVertexIndex, 1)) {
 				vertices.emplace_back(newVertexIndex, shape[newVertexIndex] * 2, newFace);
 				VertexRef newVertex(vertices.size() - 1);
 				getFace(newFace).adjacentVertices[newVertexIndex] = newVertex;
