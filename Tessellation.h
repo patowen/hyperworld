@@ -29,14 +29,11 @@ private:
 	template<typename T>
 	class PolarityArray {
 	public:
+		PolarityArray() {}
 		PolarityArray(T elemPos, T elemNeg): data {elemPos, elemNeg} {}
 		T& operator[](int pole) { return data[(1 - pole) / 2]; }
-		const T& operator[](int pole) const { return data[(pole + 1) / 2]; }
+		const T& operator[](int pole) const { return data[(1 - pole) / 2]; }
 
-		template<typename Ret, typename F>
-		auto select(F f) -> PolarityArray<Ret> {
-			return PolarityArray<Ret>(f(data[0]), f(data[1]));
-		}
 	private:
 		std::array<T, 2> data;
 	};
@@ -168,11 +165,6 @@ private:
 		PolarityArray<unsigned> seedVertexIndices((edge + 2u) % n, (edge + 1u) % n);
 
 		int orientation = -getFace(face).orientation;
-
-		if (orientation != 1 && orientation != -1) {
-			throw std::runtime_error("Bad orientation");
-		}
-
 		faces.emplace_back(orientation);
 		FaceRef newFace(faces.size() - 1);
 
@@ -182,8 +174,9 @@ private:
 		getFace(newFace).adjacentFaces[edge] = face;
 
 		// Face to vertex / vertex to face
-		auto seedVertices = seedVertexIndices.select<VertexRef>([this, face](auto index){ return getFace(face).adjacentVertices[index]; });
+		PolarityArray<VertexRef> seedVertices;
 		for (int pole : poles) {
+			seedVertices[pole] = getFace(face).adjacentVertices[seedVertexIndices[pole]];
 			getFace(newFace).adjacentVertices[seedVertexIndices[pole]] = seedVertices[pole];
 			getVertex(seedVertices[pole]).addFace(newFace, -pole * orientation);
 		}
