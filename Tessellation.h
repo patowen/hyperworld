@@ -14,7 +14,7 @@ public:
 
 			for (size_t j=0; j<currentCount; ++j) {
 				for (unsigned k=0; k<n; ++k) {
-					if (faces[j].adjacentFaces[k].index == FaceRef::nullRef()) {
+					if (faces[j].adjacentFaces[k].isNull()) {
 						FaceRef face = createAdjacentFace(FaceRef(j), k);
 					}
 				}
@@ -26,6 +26,9 @@ public:
 	}
 
 private:
+	static constexpr unsigned n = 3;
+	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
+
 	template<typename T>
 	class PolarityArray {
 	public:
@@ -33,50 +36,30 @@ private:
 		PolarityArray(T elemPos, T elemNeg): data {elemPos, elemNeg} {}
 		T& operator[](int pole) { return data[(1 - pole) / 2]; }
 		const T& operator[](int pole) const { return data[(1 - pole) / 2]; }
-
 	private:
 		std::array<T, 2> data;
 	};
 
 	std::array<int, 2> poles = {1, -1};
 
-	static constexpr unsigned n = 3;
-	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
+	template<typename T>
+	class VectorRef {
+	public:
+		VectorRef(): index(nullRef()) {}
+		VectorRef(size_t index): index(index) {}
+		bool isNull() { return index == nullRef(); }
+		size_t index;
+	private:
+		static constexpr size_t nullRef() { return std::numeric_limits<size_t>::max(); }
+	};
 
 	class Face;
 	class Vertex;
 	std::vector<Face> faces;
 	std::vector<Vertex> vertices;
 
-	class FaceRef {
-	public:
-		static constexpr size_t nullRef() {
-			return std::numeric_limits<size_t>::max();
-		}
-
-		FaceRef(): index(nullRef()) {}
-		FaceRef(size_t index): index(index) {}
-		size_t index;
-
-		bool isNull() {
-			return index == nullRef();
-		}
-	};
-
-	class VertexRef {
-	public:
-		static constexpr size_t nullRef() {
-			return std::numeric_limits<size_t>::max();
-		}
-
-		VertexRef(): index(nullRef()) {}
-		VertexRef(size_t index): index(index) {}
-		size_t index;
-
-		bool isNull() {
-			return index == nullRef();
-		}
-	};
+	using FaceRef = VectorRef<Face>;
+	using VertexRef = VectorRef<Vertex>;
 
 	class Face {
 	public:
