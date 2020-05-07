@@ -127,12 +127,15 @@ private:
 			seedVertices[pole]->addFace(newFace, -pole * orientation);
 		}
 
-		// Vertex saturation prep
+		// Vertex saturation
+		// TODO: This logic is a little shaky, and the code is nigh unreadable. The purpose of the vertex
+		// saturation section is to walk around the edges of the face checking to see if the neighboring face
+		// has already been discovered. This should be true iff the an associated vertex is saturated, meaning
+		// that all faces around that vertex have been discovered.
 		PolarityArray<unsigned> walkingVertexIndices = seedVertexIndices;
 		PolarityArray<Vertex*> walkingVertices = seedVertices;
 		PolarityArray<unsigned> walkingEdges(edge, edge);
 
-		// Vertex saturation
 		for (int pole : poles) {
 			while (walkingVertexIndices[pole] != walkingVertexIndices[-pole]) {
 				if (!walkingVertices[pole]->isSaturated()) {
@@ -154,12 +157,10 @@ private:
 		}
 
 		// Freshly-created vertices
-		if (walkingVertexIndices[1] != walkingVertexIndices[-1]) {
-			for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; newFace.adjacentVertices[newVertexIndex] == nullptr; incrementIndex(newVertexIndex, 1)) {
-				std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace);
-				newFace.adjacentVertices[newVertexIndex] = newVertex.get();
-				vertices.push_back(std::move(newVertex));
-			}
+		for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; newFace.adjacentVertices[newVertexIndex] == nullptr; incrementIndex(newVertexIndex, 1)) {
+			std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace);
+			newFace.adjacentVertices[newVertexIndex] = newVertex.get();
+			vertices.push_back(std::move(newVertex));
 		}
 
 		faces.push_back(std::move(newFacePtr));
