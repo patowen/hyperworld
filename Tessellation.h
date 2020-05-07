@@ -182,8 +182,9 @@ private:
 
 				getFace(newFace).adjacentFaces[walkingEdges[pole]] = existingFace;
 				getFace(existingFace).adjacentFaces[walkingEdges[pole]] = newFace;
-				getFace(newFace).adjacentVertices[walkingVertexIndices[pole]] = walkingVertices[pole];
-				if (walkingVertexIndices[pole] != walkingVertexIndices[-pole]) {
+
+				if (getFace(newFace).adjacentVertices[walkingVertexIndices[pole]].isNull()) {
+					getFace(newFace).adjacentVertices[walkingVertexIndices[pole]] = walkingVertices[pole];
 					getVertex(walkingVertices[pole]).addFace(newFace, -pole * orientation);
 				}
 			}
@@ -191,7 +192,7 @@ private:
 
 		// Freshly-created vertices
 		if (walkingVertexIndices[1] != walkingVertexIndices[-1]) {
-			for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; newVertexIndex != walkingVertexIndices[-1]; incrementIndex(newVertexIndex, 1)) {
+			for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; getFace(newFace).adjacentVertices[newVertexIndex].isNull(); incrementIndex(newVertexIndex, 1)) {
 				vertices.emplace_back(newVertexIndex, shape[newVertexIndex] * 2, newFace);
 				VertexRef newVertex(vertices.size() - 1);
 				getFace(newFace).adjacentVertices[newVertexIndex] = newVertex;
