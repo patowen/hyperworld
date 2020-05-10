@@ -35,32 +35,20 @@ namespace VectorMath {
 
 		class QrFactorization {
 		public:
-			QrFactorization(Matrix4d matrix): q(matrix), r(Matrix4d::Zero()) {
-				r(3, 3) = sqrt(-hyperbolicSqrNorm(q.col(3)));
-				q.col(3) /= r(3, 3);
-				r(3, 0) = -hyperbolicDotProduct(q.col(3), q.col(0));
-				r(3, 1) = -hyperbolicDotProduct(q.col(3), q.col(1));
-				r(3, 2) = -hyperbolicDotProduct(q.col(3), q.col(2));
-				q.col(0) -= q.col(3) * r(3, 0);
-				q.col(1) -= q.col(3) * r(3, 1);
-				q.col(2) -= q.col(3) * r(3, 2);
+			QrFactorization(Matrix4d matrix): q(matrix), r(Matrix4d::Zero()), distFromDiagonal(0) {
+				int indices[4] = {3, 0, 1, 2};
+				int poles[4] = {-1, 1, 1, 1};
 
-				r(0, 0) = sqrt(hyperbolicSqrNorm(q.col(0)));
-				q.col(0) /= r(0, 0);
-				r(0, 1) = hyperbolicDotProduct(q.col(0), q.col(1));
-				r(0, 2) = hyperbolicDotProduct(q.col(0), q.col(2));
-				q.col(1) -= q.col(0) * r(0, 1);
-				q.col(2) -= q.col(0) * r(0, 2);
+				for (int i=0; i<4; ++i) {
+					r(indices[i], indices[i]) = sqrt(poles[i] * hyperbolicSqrNorm(q.col(indices[i])));
+					q.col(indices[i]) /= r(indices[i], indices[i]);
 
-				r(1, 1) = sqrt(hyperbolicSqrNorm(q.col(1)));
-				q.col(1) /= r(1, 1);
-				r(1, 2) = hyperbolicDotProduct(q.col(1), q.col(2));
-				q.col(2) -= q.col(1) * r(1, 2);
-
-				r(2, 2) = sqrt(hyperbolicSqrNorm(q.col(2)));
-				q.col(2) /= r(2, 2);
-
-				distFromDiagonal = std::max({abs(r(3, 0)), abs(r(3, 1)), abs(r(3, 2)), abs(r(0, 1)), abs(r(0, 2)), abs(r(1, 2))});
+					for (int j=i+1; j<4; ++j) {
+						r(indices[i], indices[j]) = poles[i] * hyperbolicDotProduct(q.col(indices[i]), q.col(indices[j]));
+						distFromDiagonal += r(indices[i], indices[j]) * r(indices[i], indices[j]);
+						q.col(indices[j]) -= q.col(indices[i]) * r(indices[i], indices[j]);
+					}
+				}
 			}
 
 			Matrix4d q;
