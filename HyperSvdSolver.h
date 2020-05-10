@@ -7,19 +7,22 @@ namespace VectorMath {
 	public:
 		HyperSvdSolver(Matrix4d matrix): svdU(Matrix4d::Identity()), svdV(Matrix4d::Identity()) {
 			Matrix4d m = matrix;
-			for (int i=0; i<20; ++i) {
+			int i;
+			double deviation = 0;
+			for (i=0; i<500; ++i) {
 				QrFactorization qr(m);
 				svdU *= qr.q;
 				QrFactorization lpT(isometricInverse(qr.r));
 				svdV *= lpT.q;
 				m = isometricInverse(lpT.r);
+
+				deviation = lpT.distFromDiagonal;
+				if (lpT.distFromDiagonal < 1e-4) {
+					break;
+				}
 			}
 
-			Matrix4d dummy = Matrix4d::Identity();
-			for (int i=0; i<4; ++i) {
-				dummy(i, i) = m(i, i);
-			}
-			std::cout << (m - dummy).norm() << "\n";
+			std::cout << i << ", " << deviation << std::endl;
 		}
 
 		Matrix4d getOrthogonal() {
@@ -56,10 +59,13 @@ namespace VectorMath {
 
 				r(2, 2) = sqrt(hyperbolicSqrNorm(q.col(2)));
 				q.col(2) /= r(2, 2);
+
+				distFromDiagonal = std::max({abs(r(3, 0)), abs(r(3, 1)), abs(r(3, 2)), abs(r(0, 1)), abs(r(0, 2)), abs(r(1, 2))});
 			}
 
 			Matrix4d q;
 			Matrix4d r;
+			double distFromDiagonal;
 		};
 	};
 }

@@ -20,6 +20,8 @@ public:
 		}
 	}
 
+	~InputListener();
+
 private:
 	void addMouseCallback(int button, MouseButton* inputButton, const std::function<void()>& callback) {
 		if (mouseCallbacks.find(button) == mouseCallbacks.end()) {
@@ -120,6 +122,8 @@ private:
 
 	int button;
 	InputListener* listener;
+
+	friend class InputListener;
 };
 
 class KeyboardButton : public InputButton {
@@ -158,7 +162,23 @@ private:
 
 	int key;
 	InputListener* listener;
+
+	friend class InputListener;
 };
+
+InputListener::~InputListener() {
+	for (auto& mc : mouseCallbacks) {
+		for (auto& mc2 : mc.second) {
+			mc2.first->listener = nullptr;
+		}
+	}
+
+	for (auto& kc : keyboardCallbacks) {
+		for (auto& kc2 : kc.second) {
+			kc2.first->listener = nullptr;
+		}
+	}
+}
 
 class InputHandle {
 public:
