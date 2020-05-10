@@ -1,5 +1,6 @@
 #pragma once
 #include "VectorMath.h"
+#include "HyperSvdSolver.h"
 #include "UserInput.h"
 
 class GhostCamera {
@@ -70,6 +71,13 @@ public:
 			zRotation += 1;
 		}
 		pos *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
+
+		pos = VectorMath::orthogonalizeGramSchmidt(pos);
+
+		if (userInput.isPressed(inputs.goHome)) {
+			VectorMath::HyperSvdSolver solver(pos + Matrix4d::Identity() * dt);
+			pos = solver.getOrthogonal();
+		}
 	}
 
 	Matrix4d getTransform() {
@@ -96,6 +104,7 @@ private:
 		InputHandle toggleSpeed = KeyboardButton(GLFW_KEY_LEFT_SHIFT);
 
 		InputHandle rotationLock = KeyboardButton(GLFW_KEY_LEFT_CONTROL);
+		InputHandle goHome = KeyboardButton(GLFW_KEY_HOME);
 	};
 
 	Inputs inputs;

@@ -3,10 +3,13 @@
 #pragma warning( disable : 26812 26450 26495 )
 #include <Eigen/Dense>
 #pragma warning( pop )
+#include <iostream>
 
 using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
+using Matrix4cd = Eigen::Matrix<Eigen::dcomplex, 4, 4, Eigen::DontAlign>;
 using Vector3d = Eigen::Vector3d;
 using Vector4d = Eigen::Matrix<double, 4, 1, Eigen::DontAlign>;
+using Vector4cd = Eigen::Matrix<Eigen::dcomplex, 4, 1, Eigen::DontAlign>;
 using Vector2d = Eigen::Matrix<double, 2, 1, Eigen::DontAlign>;
 
 constexpr auto M_TAU = 6.2831853071795864769252867665590057683943;
@@ -92,7 +95,23 @@ namespace VectorMath {
 		double w = -(v0[0]*v1[1]*v2[2] + v0[1]*v1[2]*v2[0] + v0[2]*v1[0]*v2[1] - v0[0]*v1[2]*v2[1] - v0[1]*v1[0]*v2[2] - v0[2]*v1[1]*v2[0]);
 		return Vector4d(x, y, z, -w);
 	}
-	
+
+	inline double hyperbolicDotProduct(Vector4d v0, Vector4d v1) {
+		return v0(0)*v1(0) + v0(1)*v1(1) + v0(2)*v1(2) - v0(3)*v1(3);
+	}
+
+	inline double hyperbolicSqrNorm(Vector4d v) {
+		return hyperbolicDotProduct(v, v);
+	}
+
+	inline std::complex<double> hyperbolicDotProductComplex(Vector4cd v0, Vector4cd v1) {
+		return v0(0)*std::conj(v1(0)) + v0(1)*std::conj(v1(1)) + v0(2)*std::conj(v1(2)) - v0(3)*std::conj(v1(3));
+	}
+
+	inline double hyperbolicSqrNormComplex(Vector4cd v) {
+		return hyperbolicDotProductComplex(v, v).real();
+	}
+
 	// Moves the origin in the specified direction with a distance proportional
 	// to the magnitude of the argument
 	inline Matrix4d displacement(const Vector3d &displacement) {
@@ -100,5 +119,85 @@ namespace VectorMath {
 		double scaleFactor = norm < 1e-30 ? 1.0 : sinh(norm) / norm;
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));
 		return translation(translateVector);
+	}
+
+	inline Matrix4d orthogonalizeGramSchmidt(const Matrix4d& matrix) {
+		Matrix4d result = matrix;
+		result.col(0) /= sqrt(hyperbolicSqrNorm(result.col(0)));
+		result.col(1) -= result.col(0) * hyperbolicDotProduct(result.col(0), result.col(1));
+		result.col(2) -= result.col(0) * hyperbolicDotProduct(result.col(0), result.col(2));
+		result.col(3) -= result.col(0) * hyperbolicDotProduct(result.col(0), result.col(3));
+
+		result.col(1) /= sqrt(hyperbolicSqrNorm(result.col(1)));
+		result.col(2) -= result.col(1) * hyperbolicDotProduct(result.col(1), result.col(2));
+		result.col(3) -= result.col(1) * hyperbolicDotProduct(result.col(1), result.col(3));
+
+		result.col(2) /= sqrt(hyperbolicSqrNorm(result.col(2)));
+		result.col(3) -= result.col(2) * hyperbolicDotProduct(result.col(2), result.col(3));
+
+		result.col(3) /= sqrt(-hyperbolicSqrNorm(result.col(3)));
+		return result;
+	}
+
+	inline void orthogonalizeGramSchmidtWeak(Matrix4cd& matrix) {
+		double sqrNorm0 = hyperbolicSqrNormComplex(matrix.col(0));
+		matrix.col(1) -= matrix.col(0) * hyperbolicDotProductComplex(matrix.col(0), matrix.col(1)) / sqrNorm0;
+		matrix.col(2) -= matrix.col(0) * hyperbolicDotProductComplex(matrix.col(0), matrix.col(2)) / sqrNorm0;
+		matrix.col(3) -= matrix.col(0) * hyperbolicDotProductComplex(matrix.col(0), matrix.col(3)) / sqrNorm0;
+
+		double sqrNorm1 = hyperbolicSqrNormComplex(matrix.col(1));
+		matrix.col(2) -= matrix.col(1) * hyperbolicDotProductComplex(matrix.col(1), matrix.col(2)) / sqrNorm1;
+		matrix.col(3) -= matrix.col(1) * hyperbolicDotProductComplex(matrix.col(1), matrix.col(3)) / sqrNorm1;
+
+		double sqrNorm2 = hyperbolicSqrNormComplex(matrix.col(2));
+		matrix.col(3) -= matrix.col(2) * hyperbolicDotProductComplex(matrix.col(2), matrix.col(3)) / sqrNorm2;
+	}
+
+	inline void normalizeColumns(Matrix4cd& matrix) {
+		matrix.col(0) /= sqrt(hyperbolicSqrNormComplex(matrix.col(0)));
+		matrix.col(1) /= sqrt(hyperbolicSqrNormComplex(matrix.col(1)));
+		matrix.col(2) /= sqrt(hyperbolicSqrNormComplex(matrix.col(2)));
+		matrix.col(3) /= sqrt(-hyperbolicSqrNormComplex(matrix.col(3)));
+	}
+
+	inline void orthogonalizeWithSvd(const Matrix4d& matrix) {
+		Matrix4d matrix2 = matrix + displacement(Vector3d(0, 0, 0));// + displacement(Vector3d(1, 0, 0));
+		//std::cout << (matrix2 * VectorMath::isometricInverse(matrix2)) << "\n\n";
+		Matrix4d matrixU = matrix2 * isometricInverse(matrix2);
+		Eigen::EigenSolver<Matrix4d> eigenSolver(matrixU, true);
+		Matrix4cd eigenvectors = eigenSolver.eigenvectors();
+		orthogonalizeGramSchmidtWeak(eigenvectors);
+		Vector4d singularValues = Eigen::sqrt(eigenSolver.eigenvalues().real().array()).matrix();
+		//std::cout << hyperbolicDotProduct(eigenvectors.col(2), eigenvectors.col(3)) << "\n\n";
+
+		int specialCount = 0;
+		int specialIndex = -1;
+		for (int i=0; i<4; ++i) {
+			if (hyperbolicSqrNormComplex(eigenvectors.col(i)) < 0) {
+				++specialCount;
+				specialIndex = i;
+			}
+		}
+		if (specialCount != 1) {
+			std::cout << "count: " << specialCount << "\n";
+			// std::cout << isometricInverse(eigenvectors) * eigenvectors << "\n";
+			std::cout << eigenSolver.eigenvectors() << std::endl;
+			std::cout << eigenSolver.eigenvalues() << std::endl;
+			return;
+			//throw std::runtime_error("No eigenvector has negative norm.");
+		}
+		//throw std::runtime_error("No eigenvector has negative norm.");
+
+		eigenvectors.col(specialIndex).swap(eigenvectors.col(3));
+		normalizeColumns(eigenvectors);
+		std::swap(singularValues(specialIndex), singularValues(3));
+
+		// eigenvectors is U. Singular values is Sigma.
+		Matrix4cd svdVT = (eigenvectors * singularValues.asDiagonal()).inverse() * matrix2;
+
+		//std::cout << (isometricInverse(eigenvectors) * eigenvectors) << "\n\n";
+		//std::cout << eigenvectors * VectorMath::isometricInverse(eigenvectors) << "\n\n";
+		Matrix4cd answer = eigenvectors * svdVT;
+		// std::cout << answer * VectorMath::isometricInverse(answer) << "\n\n";
 	}
 }
