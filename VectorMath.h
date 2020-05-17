@@ -74,6 +74,10 @@ namespace VectorMath {
 		return result;
 	}
 
+	inline Matrix4d reflection(const Vector4d& normal) {
+		return Matrix4d::Identity() - 2.0 * normal * Eigen::RowVector4d(normal(0), normal(1), normal(2), -normal(3));
+	}
+
 	inline Matrix4d isometricInverse(const Matrix4d& matrix) {
 		Matrix4d result;
 

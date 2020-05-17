@@ -6,6 +6,31 @@
 
 class Tessellation {
 public:
+	Tessellation() {
+		std::array<double, n> angles;
+		std::array<double, n> cosAngles;
+		std::array<double, n> sinAngles;
+		for (int i=0; i<n; ++i) {
+			angles[i] = M_TAU / shape[i] / 2;
+			cosAngles[i] = cos(angles[i]);
+			sinAngles[i] = sin(angles[i]);
+		}
+
+		faceVertices[0] = Vector4d(0, 0, 0, 1);
+
+		double coshEdge01 = (cosAngles[2] + cosAngles[0] * cosAngles[1]) / (sinAngles[0] * sinAngles[1]);
+		double sinhEdge01 = sqrt(coshEdge01 * coshEdge01 - 1);
+		faceVertices[1] = Vector4d(sinhEdge01, 0, 0, coshEdge01);
+
+		double coshEdge02 = (cosAngles[1] + cosAngles[0] * cosAngles[2]) / (sinAngles[0] * sinAngles[2]);
+		double sinhEdge02 = sqrt(coshEdge02 * coshEdge02 - 1);
+		faceVertices[2] = Vector4d(sinhEdge02 * cosAngles[0], sinhEdge02 * sinAngles[0], 0, coshEdge02);
+
+		for (int i=0; i<n; ++i) {
+			reflections[i] = VectorMath::reflection(VectorMath::hyperbolicNormal(faceVertices[(i+1) % n], faceVertices[(i+2) % n], Vector4d::UnitZ()));
+		}
+	}
+
 	void testTessellation() {
 		createSeedFace();
 		for (unsigned i=0; i<15; ++i) {
@@ -28,6 +53,8 @@ public:
 private:
 	static constexpr unsigned n = 3;
 	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
+	std::array<Vector4d, n> faceVertices;
+	std::array<Matrix4d, n> reflections;
 
 	template<typename T>
 	class PolarityArray {
