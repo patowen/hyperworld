@@ -48,8 +48,14 @@ public:
 	}
 
 	void testTessellation() {
-		createSeedFace();
-		for (unsigned i=0; i<5 /*15*/; ++i) {
+		Face* currentFace = &createSeedFace();
+		unsigned nextEdge = 1;
+		while (currentFace->adjacentFaces[nextEdge] == nullptr) {
+			currentFace = &createAdjacentFace(*currentFace, nextEdge);
+			nextEdge = 3u - nextEdge;
+		}
+
+		for (unsigned i=0; i<12; ++i) {
 			size_t currentCount = faces.size();
 
 			for (size_t j=0; j<currentCount; ++j) {
