@@ -4,16 +4,6 @@
 #include "ModelBuilder.h"
 #include "Tessellation.h"
 
-Model makeHelloWorldTriangle(const ShaderInterface& shaderInterface) {
-	std::vector<Vertex> vertices {
-		Vertex({-0.693f, -0.4f, 0.0f, 1.0f}, {1.f, 0.f, 0.f, 1.0f}, {0.0f, 0.0f}),
-		Vertex({0.693f, -0.4f, 0.0f, 1.0f}, {0.f, 1.f, 0.f, 1.0f}, {1.0f, 0.0f}),
-		Vertex({0.f, 0.8f, 0.0f, 1.0f}, {0.f, 0.f, 1.f, 1.0f}, {0.0f, 1.0f}),
-	};
-
-	return Model(shaderInterface, vertices, {0, 1, 2});
-}
-
 Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 	float s = 0.31546169558954995f;
 	float goldenRatio = (1.0f + sqrtf(5.0f)) / 2.0f;
@@ -92,16 +82,39 @@ Model makeHorosphere(const ShaderInterface& shaderInterface) {
 	return builder.build(shaderInterface);
 }
 
-enum class ModelHandle {DODECAHEDRON, HOROSPHERE};
+Model makePlane(const ShaderInterface& shaderInterface) {
+	ModelBuilder builder;
+	Tessellation tessellation;
+	tessellation.testTessellation();
+
+	std::array<Vector2d, tessellation.n> texCoords { Vector2d(0, 0), Vector2d(1, 0), Vector2d(0, 1) };
+	Vector4d normal(0, 0, 1, 0);
+
+	for (size_t i=0; i<tessellation.getNumFaces(); ++i) {
+		std::array<GLuint, tessellation.n> vertices;
+
+		for (size_t j=0; j<tessellation.n; ++j) {
+			std::cout << tessellation.getVertexPos(i, j).transpose() << "\n";
+			vertices[j] = builder.addVertex(tessellation.getVertexPos(i, j), normal, texCoords[j]);
+		}
+
+		std::cout << "\n";
+
+		int orientation = tessellation.getOrientation(i);
+		builder.addTriangle(vertices[0], vertices[(orientation + tessellation.n) % tessellation.n], vertices[(orientation * 2 + tessellation.n) % tessellation.n]);
+	}
+
+	return builder.build(shaderInterface);
+}
+
+enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE};
 
 class ModelBank {
 public:
 	ModelBank(const ShaderInterface& shaderInterface) {
 		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron(shaderInterface));
 		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere(shaderInterface));
-
-		Tessellation tessellation;
-		tessellation.testTessellation();
+		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane(shaderInterface));
 	}
 
 	void render(ModelHandle model) {

@@ -6,6 +6,8 @@
 
 class Tessellation {
 public:
+	static constexpr unsigned n = 3;
+
 	Tessellation() {
 		std::array<double, n> angles;
 		std::array<double, n> cosAngles;
@@ -31,9 +33,21 @@ public:
 		}
 	}
 
+	size_t getNumFaces() {
+		return faces.size();
+	}
+
+	Vector4d getVertexPos(size_t faceIndex, size_t vertexIndex) {
+		return faces[faceIndex]->adjacentVertices[vertexIndex]->pos;
+	}
+
+	int getOrientation(size_t faceIndex) {
+		return faces[faceIndex]->orientation;
+	}
+
 	void testTessellation() {
 		createSeedFace();
-		for (unsigned i=0; i<15; ++i) {
+		for (unsigned i=0; i<3 /*15*/; ++i) {
 			std::cout << faces.size() << ", " << vertices.size() << "\n";
 			size_t currentCount = faces.size();
 
@@ -51,8 +65,7 @@ public:
 	}
 
 private:
-	static constexpr unsigned n = 3;
-	std::array<unsigned, n> shape = {2, 3, 5}; // {2, 4, 5}
+	std::array<unsigned, n> shape = {2, 4, 5}; // {2, 4, 5}
 	std::array<Vector4d, n> faceVertices;
 	std::array<Matrix4d, n> reflections;
 
@@ -76,21 +89,23 @@ private:
 
 	class Face {
 	public:
-		Face(int orientation): orientation(orientation) {
+		Face(int orientation, Matrix4d pos): orientation(orientation), pos(pos) {
 			adjacentFaces.fill(nullptr);
 			adjacentVertices.fill(nullptr);
 		}
 		int orientation;
+		Matrix4d pos;
 		std::array<Face*, n> adjacentFaces;
 		std::array<Vertex*, n> adjacentVertices;
 	};
 
 	class Vertex {
 	public:
-		Vertex(unsigned type, unsigned numAdjacentFaces, Face& startFace):
+		Vertex(unsigned type, unsigned numAdjacentFaces, Face& startFace, Vector4d pos):
 			type(type),
 			adjacentFaces(numAdjacentFaces, nullptr),
-			fanBoundaries(numAdjacentFaces - 1, 0) {
+			fanBoundaries(numAdjacentFaces - 1, 0),
+			pos(pos) {
 			adjacentFaces[numAdjacentFaces - 1] = &startFace;
 		}
 
@@ -114,14 +129,15 @@ private:
 		int type;
 		std::vector<Face*> adjacentFaces;
 		PolarityArray<unsigned> fanBoundaries;
+		Vector4d pos;
 	};
 
 	Face& createSeedFace() {
-		std::unique_ptr<Face> newFacePtr = std::make_unique<Face>(1);
+		std::unique_ptr<Face> newFacePtr = std::make_unique<Face>(1, Matrix4d::Identity());
 		Face& newFace = *newFacePtr;
 
 		for (unsigned newVertexIndex = 0; newVertexIndex != n; ++newVertexIndex) {
-			std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace);
+			std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace, faceVertices[newVertexIndex]);
 			newFace.adjacentVertices[newVertexIndex] = newVertex.get();
 			vertices.push_back(std::move(newVertex));
 		}
@@ -138,7 +154,7 @@ private:
 		PolarityArray<unsigned> seedVertexIndices((edge + 2u) % n, (edge + 1u) % n);
 
 		int orientation = -face.orientation;
-		std::unique_ptr<Face> newFacePtr = std::make_unique<Face>(orientation);
+		std::unique_ptr<Face> newFacePtr = std::make_unique<Face>(orientation, face.pos * reflections[edge]);
 		Face& newFace = *newFacePtr;
 
 		// Sort out all direct adjacencies
@@ -185,7 +201,7 @@ private:
 
 		// Freshly-created vertices
 		for (unsigned newVertexIndex = (walkingVertexIndices[1] + 1u) % n; newFace.adjacentVertices[newVertexIndex] == nullptr; incrementIndex(newVertexIndex, 1)) {
-			std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace);
+			std::unique_ptr<Vertex> newVertex = std::make_unique<Vertex>(newVertexIndex, shape[newVertexIndex] * 2, newFace, newFace.pos * faceVertices[newVertexIndex]);
 			newFace.adjacentVertices[newVertexIndex] = newVertex.get();
 			vertices.push_back(std::move(newVertex));
 		}
