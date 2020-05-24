@@ -29,7 +29,7 @@ public:
 		}
 
 		mvpLocation = glGetUniformLocation(program, "MVP");
-		lightPosLocation = glGetUniformLocation(program, "light_pos");
+		lightPosLocation = glGetUniformLocation(program, "light");
 		vPosLocation = glGetAttribLocation(program, "vPos");
 		vNormalLocation = glGetAttribLocation(program, "vNormal");
 		vTexCoordLocation = glGetAttribLocation(program, "vTexCoord");
@@ -70,31 +70,37 @@ const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"in vec4 vPos;\n"
 	"in vec4 vNormal;\n"
 	"in vec2 vTexCoord;\n"
-	"out vec4 pos_raw;"
-	"out vec4 normal_raw;\n"
+	"out vec4 pos;"
+	"out vec4 normal;\n"
 	"out vec2 texCoord;\n"
 	"void main()\n"
 	"{\n"
 	"    gl_Position = MVP * vPos;\n"
-	"    pos_raw = vPos;"
-	"    normal_raw = vNormal;\n"
+	"    pos = vPos;"
+	"    normal = vNormal;\n"
 	"    texCoord = vTexCoord;\n"
 	"}\n";
 
 const char* ShaderInterface::fragmentShaderText =
 	"#version 150\n"
-	"uniform sampler2D texture_sampler;"
-	"uniform vec4 light_pos;\n"
-	"in vec4 pos_raw;\n"
-	"in vec4 normal_raw;\n"
+	"uniform sampler2D texture_sampler;\n"
+	"uniform vec4 light;\n"
+	"in vec4 pos;\n"
+	"in vec4 normal;\n"
 	"in vec2 texCoord;\n"
-	"out vec4 fragColor;"
+	"out vec4 fragColor;\n"
+	"float hypdot(vec4 v1, vec4 v2)\n"
+	"{\n"
+	"    return dot(v1.xyz, v2.xyz) - v1.w * v2.w;\n"
+	"}\n"
 	"void main()\n"
 	"{\n"
-	"    vec4 pos = pos_raw / sqrt(pos_raw.w * pos_raw.w - dot(pos_raw.xyz, pos_raw.xyz));\n"
-	"    vec4 normal = (normal_raw / sqrt(-normal_raw.w * normal_raw.w + dot(normal_raw.xyz, normal_raw.xyz))) * (gl_FrontFacing ? 1.0 : -1.0);\n"
-	"    vec4 light_dir_raw = light_pos + pos * (-light_pos.w * pos.w + dot(light_pos.xyz, pos.xyz));\n"
-	"    vec4 light_dir = light_dir_raw / sqrt(-light_dir_raw.w * light_dir_raw.w + dot(light_dir_raw.xyz, light_dir_raw.xyz));\n"
-	"    float directness = max(0, -light_dir.w * normal.w + dot(light_dir.xyz, normal.xyz));\n"
+	"    float hypdot_pos_pos = hypdot(pos, pos);\n"
+	"    float hypdot_pos_light = hypdot(pos, light);\n"
+	"    float hypdot_pos_normal = hypdot(pos, normal);\n"
+	"    float numerator = hypdot(light, normal) * hypdot_pos_pos - hypdot_pos_light * hypdot_pos_normal;\n"
+	"    float denominator_light = hypdot(light, light) * hypdot_pos_pos - hypdot_pos_light * hypdot_pos_light;\n"
+	"    float denominator_normal = hypdot(normal, normal) * hypdot_pos_pos - hypdot_pos_normal * hypdot_pos_normal;\n"
+	"    float directness = max(0.0, -(gl_FrontFacing ? 1.0 : -1.0) * numerator / sqrt(denominator_light * denominator_normal));\n"
 	"    fragColor = vec4(texture(texture_sampler, texCoord).rgb * directness, 1.0);\n"
 	"}\n";
