@@ -68,11 +68,11 @@ public:
 
 		context.useShader();
 		context.setUniforms();
-		//context.setTexture(TextureHandle::TILE);
-		//context.render(ModelHandle::HOROSPHERE);
-		context.setTexture(TextureHandle::PERLIN);
+		context.setTexture(TextureHandle::TILE);
+		context.render(ModelHandle::HOROSPHERE);
+		//context.setTexture(TextureHandle::PERLIN);
 		//context.render(ModelHandle::DODECAHEDRON);
-		context.render(ModelHandle::PLANE);
+		//context.render(ModelHandle::PLANE);
 	}
 
 	void renderLoop() {

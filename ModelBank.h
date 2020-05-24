@@ -67,7 +67,7 @@ Model makeHorosphere(const ShaderInterface& shaderInterface) {
 			Matrix4d rotation = VectorMath::horoRotation(xPos, yPos);
 			vertices(i, j) = builder.addVertex(
 				rotation * Vector4d(0, 0, 0, 1),
-				rotation * Vector4d(0, 0, 1, 0),
+				Vector4d(0, 0, 1, -1),
 				Vector2d(xPos * textureSize, yPos * textureSize));
 		}
 	}
