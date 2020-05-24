@@ -94,11 +94,8 @@ Model makePlane(const ShaderInterface& shaderInterface) {
 		std::array<GLuint, tessellation.n> vertices;
 
 		for (size_t j=0; j<tessellation.n; ++j) {
-			std::cout << tessellation.getVertexPos(i, j).transpose() << "\n";
 			vertices[j] = builder.addVertex(tessellation.getVertexPos(i, j), normal, texCoords[j]);
 		}
-
-		std::cout << "\n";
 
 		int orientation = tessellation.getOrientation(i);
 		builder.addTriangle(vertices[0], vertices[(orientation + tessellation.n) % tessellation.n], vertices[(orientation * 2 + tessellation.n) % tessellation.n]);

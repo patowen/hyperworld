@@ -29,7 +29,9 @@ public:
 		faceVertices[2] = Vector4d(sinhEdge02 * cosAngles[0], sinhEdge02 * sinAngles[0], 0, coshEdge02);
 
 		for (int i=0; i<n; ++i) {
-			reflections[i] = VectorMath::reflection(VectorMath::hyperbolicNormal(faceVertices[(i+1) % n], faceVertices[(i+2) % n], Vector4d::UnitZ()));
+			Vector4d normal = VectorMath::hyperbolicNormal(faceVertices[(i+1) % n], faceVertices[(i+2) % n], Vector4d::UnitZ());
+			normal /= sqrt(VectorMath::hyperbolicSqrNorm(normal));
+			reflections[i] = VectorMath::reflection(normal);
 		}
 	}
 
@@ -47,8 +49,7 @@ public:
 
 	void testTessellation() {
 		createSeedFace();
-		for (unsigned i=0; i<3 /*15*/; ++i) {
-			std::cout << faces.size() << ", " << vertices.size() << "\n";
+		for (unsigned i=0; i<5 /*15*/; ++i) {
 			size_t currentCount = faces.size();
 
 			for (size_t j=0; j<currentCount; ++j) {
@@ -59,9 +60,6 @@ public:
 				}
 			}
 		}
-
-		std::cout << faces.size() << ", " << vertices.size() << "\n";
-		std::cout << "Done\n";
 	}
 
 private:
