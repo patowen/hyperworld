@@ -82,8 +82,8 @@ const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"void main()\n"
 	"{\n"
 	"    gl_Position = projection * modelView * vPos;\n"
-	"    pos = vPos;"
-	"    normal = vNormal;\n"
+	"    pos = modelView * vPos;"
+	"    normal = modelView * vNormal;\n"
 	"    texCoord = vTexCoord;\n"
 	"}\n";
 
@@ -108,5 +108,6 @@ const char* ShaderInterface::fragmentShaderText =
 	"    float denominator_light = hypdot(light, light) * hypdot_pos_pos - hypdot_pos_light * hypdot_pos_light;\n"
 	"    float denominator_normal = hypdot(normal, normal) * hypdot_pos_pos - hypdot_pos_normal * hypdot_pos_normal;\n"
 	"    float directness = max(0.0, -(gl_FrontFacing ? 1.0 : -1.0) * numerator / sqrt(denominator_light * denominator_normal));\n"
+	"    gl_FragDepth = -pos.z / (pos.w + 1.0);"
 	"    fragColor = vec4(texture(texture_sampler, texCoord).rgb * directness, 1.0);\n"
 	"}\n";
