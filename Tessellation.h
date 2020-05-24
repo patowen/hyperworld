@@ -55,7 +55,7 @@ public:
 			nextEdge = 3u - nextEdge;
 		}
 
-		for (unsigned i=0; i<12; ++i) {
+		for (unsigned i=0; i<18; ++i) {
 			size_t currentCount = faces.size();
 
 			for (size_t j=0; j<currentCount; ++j) {

@@ -28,7 +28,8 @@ public:
 			throw std::runtime_error("Shader Link Error");
 		}
 
-		mvpLocation = glGetUniformLocation(program, "MVP");
+		projectionLocation = glGetUniformLocation(program, "projection");
+		modelViewLocation = glGetUniformLocation(program, "modelView");
 		lightPosLocation = glGetUniformLocation(program, "light");
 		vPosLocation = glGetAttribLocation(program, "vPos");
 		vNormalLocation = glGetAttribLocation(program, "vNormal");
@@ -45,8 +46,12 @@ public:
 		glUseProgram(program);
 	}
 
-	void setMvp(const Eigen::Matrix4f& mvp) {
-		glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, (const GLfloat*) mvp.data());
+	void setProjection(const Eigen::Matrix4f& projection) {
+		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, (const GLfloat*) projection.data());
+	}
+
+	void setModelView(const Eigen::Matrix4f& modelView) {
+		glUniformMatrix4fv(modelViewLocation, 1, GL_FALSE, (const GLfloat*) modelView.data());
 	}
 
 	void setLightPos(const Eigen::Vector4f& lightPos) {
@@ -61,12 +66,13 @@ private:
 	static const char* fragmentShaderText;
 
 	GLuint vertexShader, fragmentShader, program;
-	GLint mvpLocation, lightPosLocation, vPosLocation, vNormalLocation, vTexCoordLocation;
+	GLint projectionLocation, modelViewLocation, lightPosLocation, vPosLocation, vNormalLocation, vTexCoordLocation;
 	friend class Model;
 };
 
 const char* ShaderInterface::vertexShaderText = "#version 150\n"
-	"uniform mat4 MVP;\n"
+	"uniform mat4 projection;\n"
+	"uniform mat4 modelView;\n"
 	"in vec4 vPos;\n"
 	"in vec4 vNormal;\n"
 	"in vec2 vTexCoord;\n"
@@ -75,7 +81,7 @@ const char* ShaderInterface::vertexShaderText = "#version 150\n"
 	"out vec2 texCoord;\n"
 	"void main()\n"
 	"{\n"
-	"    gl_Position = MVP * vPos;\n"
+	"    gl_Position = projection * modelView * vPos;\n"
 	"    pos = vPos;"
 	"    normal = vNormal;\n"
 	"    texCoord = vTexCoord;\n"
