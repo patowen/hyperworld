@@ -1,6 +1,5 @@
 #pragma once
 #include "VectorMath.h"
-#include "HyperSvdSolver.h"
 #include "UserInput.h"
 
 class GhostCamera {
@@ -75,8 +74,7 @@ public:
 		pos = VectorMath::orthogonalizeGramSchmidt(pos);
 
 		if (userInput.isPressed(inputs.goHome)) {
-			VectorMath::HyperSvdSolver solver(pos + Matrix4d::Identity() * dt);
-			pos = solver.getOrthogonal();
+			pos = VectorMath::orthogonalizeWithSqrt(pos + Matrix4d::Identity() * dt);
 		}
 	}
 

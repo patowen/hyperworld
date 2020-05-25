@@ -9,6 +9,9 @@ find_package(PNG REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 
 add_definitions(${PNG_DEFINITIONS})
+if (MSVC)
+  add_definitions(/bigobj)
+endif (MSVC)
 
 add_executable(Hyperworld main.cpp TextureLoader.cpp glad.c)
 include(InstallRequiredSystemLibraries)
