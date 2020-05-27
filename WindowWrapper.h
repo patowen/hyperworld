@@ -16,7 +16,7 @@ class ContextWrapper;
 
 class WindowWrapper {
 public:
-	WindowWrapper(const ContextWrapper &contextWrapper) : contextWrapper(contextWrapper) {
+	WindowWrapper(const ContextWrapper &contextWrapper) : contextWrapper(contextWrapper), zoom(1) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
@@ -61,10 +61,18 @@ public:
 		UserInput userInput(window, mouseLook);
 		camera.step(1.0/60.0, userInput);
 
+		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
+			zoom /= 0.99;
+		}
+
+		if (userInput.isPressed(KeyboardButton(GLFW_KEY_P))) {
+			zoom *= 0.99;
+		}
+
 		context.resetModelView();
 		context.addModelView(camera.getTransform());
 		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
-		context.setProjection(VectorMath::perspective(ratio, 1, 0.01, 10));
+		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
 
 		context.useShader();
 		context.setUniforms();
@@ -131,4 +139,5 @@ private:
 	const ContextWrapper &contextWrapper;
 	GhostCamera camera;
 	InputListener inputListener;
+	double zoom;
 };
