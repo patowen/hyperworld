@@ -62,11 +62,11 @@ public:
 		camera.step(1.0/60.0, userInput);
 
 		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
-			zoom /= 0.99;
+			zoom *= 0.964;
 		}
 
 		if (userInput.isPressed(KeyboardButton(GLFW_KEY_P))) {
-			zoom *= 0.99;
+			zoom /= 0.964;
 		}
 
 		context.resetModelView();

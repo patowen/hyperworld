@@ -48,7 +48,7 @@ public:
 	void setUniforms() {
 		shaderInterface.setProjection(projection.cast<float>());
 		shaderInterface.setModelView(modelView.cast<float>());
-		shaderInterface.setLightPos(Vector4d(0, 0, 0, 1).cast<float>());
+		shaderInterface.setLightPos((VectorMath::isometricInverse(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
 	}
 
 	void setTexture(TextureHandle texture) {
