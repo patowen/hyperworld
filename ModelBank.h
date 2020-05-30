@@ -104,7 +104,14 @@ Model makePlane(const ShaderInterface& shaderInterface) {
 	return builder.build(shaderInterface);
 }
 
-enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE};
+Model makePrism(const ShaderInterface& shaderInterface) {
+	ModelBuilder builder;
+	builder.addPrism(Matrix4d::Identity(), 8, 1, 2, 60);
+
+	return builder.build(shaderInterface);
+}
+
+enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM};
 
 class ModelBank {
 public:
@@ -112,6 +119,7 @@ public:
 		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron(shaderInterface));
 		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere(shaderInterface));
 		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane(shaderInterface));
+		models[ModelHandle::PRISM] = std::make_unique<Model>(makePrism(shaderInterface));
 	}
 
 	void render(ModelHandle model) {

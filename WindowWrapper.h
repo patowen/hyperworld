@@ -77,12 +77,13 @@ public:
 		context.useShader();
 		context.setUniforms();
 		context.setTexture(TextureHandle::TILE);
-		context.render(ModelHandle::HOROSPHERE);
+		//context.render(ModelHandle::HOROSPHERE);
 		context.setTexture(TextureHandle::PERLIN);
+		context.render(ModelHandle::PRISM);
 		context.addModelView(VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0));
 		context.setUniforms();
 		//context.render(ModelHandle::DODECAHEDRON);
-		context.render(ModelHandle::PLANE);
+		//context.render(ModelHandle::PLANE);
 	}
 
 	void renderLoop() {
