@@ -111,7 +111,55 @@ Model makePrism(const ShaderInterface& shaderInterface) {
 	return builder.build(shaderInterface);
 }
 
-enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM};
+class TreeBuilder {
+public:
+	TreeBuilder(): sideLength(acosh(3)) {
+		Matrix4d translation = VectorMath::displacement(Vector3d(0, 0, sideLength));
+
+		recursiveTransformations.push_back(translation);
+		recursiveTransformations.push_back(translation * VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0));
+		recursiveTransformations.push_back(translation * VectorMath::rotation(Vector3d(0, 1, 0), M_TAU / 4.0));
+		recursiveTransformations.push_back(translation * VectorMath::rotation(Vector3d(-1, 0, 0), M_TAU / 4.0));
+		recursiveTransformations.push_back(translation * VectorMath::rotation(Vector3d(0, -1, 0), M_TAU / 4.0));
+	}
+
+	void buildTree(ModelBuilder& builder, Matrix4d transform, int layers) {
+		buildBranch(builder, transform, layers);
+		buildBranch(builder, transform * VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0), layers);
+		buildBranch(builder, transform * VectorMath::rotation(Vector3d(0, 1, 0), M_TAU / 4.0), layers);
+		buildBranch(builder, transform * VectorMath::rotation(Vector3d(-1, 0, 0), M_TAU / 4.0), layers);
+		buildBranch(builder, transform * VectorMath::rotation(Vector3d(0, -1, 0), M_TAU / 4.0), layers);
+		buildBranch(builder, transform * VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 2.0), layers);
+	}
+
+	void buildBranch(ModelBuilder& builder, Matrix4d transform, int layers) {
+		if (transform(3, 3) > 100) {
+			return;
+		}
+
+		builder.addPrism(transform, 8, 0.1, sideLength, 6);
+
+		if (layers != 0) {
+			for (int i = 0; i < recursiveTransformations.size(); ++i) {
+				buildBranch(builder, transform * recursiveTransformations[i], layers - 1);
+			}
+		}
+	}
+
+private:
+	std::vector<Matrix4d> recursiveTransformations;
+	double sideLength;
+};
+
+Model makeTree(const ShaderInterface& shaderInterface) {
+	ModelBuilder builder;
+
+	TreeBuilder().buildTree(builder, Matrix4d::Identity(), 7);
+
+	return builder.build(shaderInterface);
+}
+
+enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE};
 
 class ModelBank {
 public:
@@ -120,6 +168,7 @@ public:
 		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere(shaderInterface));
 		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane(shaderInterface));
 		models[ModelHandle::PRISM] = std::make_unique<Model>(makePrism(shaderInterface));
+		models[ModelHandle::TREE] = std::make_unique<Model>(makeTree(shaderInterface));
 	}
 
 	void render(ModelHandle model) {

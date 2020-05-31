@@ -61,16 +61,16 @@ public:
 			double angle0 = side * M_TAU / sides;
 			double angle1 = ((side + 1) % sides) * M_TAU / sides;
 			array<Vector4d, 2> basePos {
-				Vector4d(0, cos(angle0) * sinh(radius), sin(angle0) * sinh(radius), cosh(radius)),
-				Vector4d(0, cos(angle1) * sinh(radius), sin(angle1) * sinh(radius), cosh(radius))
+				Vector4d(cos(angle0) * sinh(radius), sin(angle0) * sinh(radius), 0, cosh(radius)),
+				Vector4d(cos(angle1) * sinh(radius), sin(angle1) * sinh(radius), 0, cosh(radius))
 			};
-			Vector4d baseNormal = VectorMath::hyperbolicNormal(basePos[0], basePos[1], VectorMath::translation(basePos[0]) * Vector4d(1, 0, 0, sqrt(2)));
+			Vector4d baseNormal = VectorMath::hyperbolicNormal(basePos[0], basePos[1], VectorMath::translation(basePos[0]) * Vector4d(0, 0, 1, sqrt(2)));
 			baseNormal /= sqrt(VectorMath::hyperbolicSqrNorm(baseNormal));
 
 			for (int step = 0; step <= steps; ++step) {
 				prismSide.emplace_back();
 				auto& prismSection = prismSide.back();
-				Matrix4d stepTransform = transform * VectorMath::displacement(Vector3d(length * step / steps, 0, 0));
+				Matrix4d stepTransform = transform * VectorMath::displacement(Vector3d(0, 0, length * step / steps));
 				for (int k=0; k<2; k++) {
 					prismSection[k] = addVertex(stepTransform * basePos[k], stepTransform * baseNormal, Vector2d((double)step / steps, (double)(side + k) / sides));
 				}
