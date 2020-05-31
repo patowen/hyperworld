@@ -20,6 +20,7 @@ public:
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
+		glfwWindowHint(GLFW_SAMPLES, 4);
 		window = glfwCreateWindow(640, 480, "Hyperworld", nullptr, nullptr);
 		if (!window) {
 			throw std::runtime_error("Failed to create window");
@@ -96,6 +97,7 @@ public:
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
+		glEnable(GL_CULL_FACE);
 
 		while (!glfwWindowShouldClose(window)) {
 			int width, height;
