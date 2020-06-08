@@ -60,7 +60,7 @@ public:
 		other.vertexArray = 0;
 	}
 
-	Model&& operator=(Model&& other) noexcept {
+	Model& operator=(Model&& other) noexcept {
 		buffers = other.buffers;
 		vertexArray = other.vertexArray;
 		numVertices = other.numVertices;
@@ -68,6 +68,7 @@ public:
 
 		other.buffers.fill(0);
 		other.vertexArray = 0;
+		return *this;
 	}
 
 	void render() {

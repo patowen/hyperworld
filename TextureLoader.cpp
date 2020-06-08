@@ -1,7 +1,4 @@
-#pragma warning( push )
-#pragma warning( disable : 5045 )
 #include <png.h>
-#pragma warning( pop )
 #include <cstdio>
 #include <vector>
 #include <stdexcept>

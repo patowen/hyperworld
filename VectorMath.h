@@ -1,9 +1,5 @@
 #pragma once
-#pragma warning( push )
-#pragma warning( disable : 26812 26450 26495 )
 #include <Eigen/Dense>
-#include <unsupported/Eigen/MatrixFunctions>
-#pragma warning( pop )
 
 using Matrix4d = Eigen::Matrix<double, 4, 4, Eigen::DontAlign>;
 using Vector3d = Eigen::Vector3d;
@@ -133,7 +129,5 @@ namespace VectorMath {
 		return result;
 	}
 
-	inline Matrix4d orthogonalizeWithSqrt(const Matrix4d& matrix) {
-		return matrix * (isometricInverse(matrix) * matrix).sqrt().inverse();
-	}
+	Matrix4d orthogonalizeWithSqrt(const Matrix4d& matrix);
 }

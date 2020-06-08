@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
+#include <memory>
 
 #include "ContextWrapper.h"
 #include "WindowWrapper.h"
@@ -18,7 +19,7 @@ int main(void) {
 	} catch (const std::runtime_error &e) {
 		fprintf(stderr, "Fatal error: %s\n", e.what());
 		char str[30];
-		gets_s(str, 20);
+		fgets(str, 20, stdin);
 		return EXIT_FAILURE;
 	}
 }

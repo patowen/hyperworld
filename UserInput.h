@@ -104,10 +104,11 @@ public:
 		other.listener = nullptr;
 	}
 
-	MouseButton&& operator=(MouseButton&& other) noexcept {
+	MouseButton& operator=(MouseButton&& other) noexcept {
 		button = other.button;
 		listener = other.listener;
 		other.listener = nullptr;
+		return *this;
 	}
 
 private:
@@ -144,10 +145,11 @@ public:
 		other.listener = nullptr;
 	}
 
-	KeyboardButton&& operator=(KeyboardButton&& other) noexcept {
+	KeyboardButton& operator=(KeyboardButton&& other) noexcept {
 		key = other.key;
 		listener = other.listener;
 		other.listener = nullptr;
+		return *this;
 	}
 
 private:
