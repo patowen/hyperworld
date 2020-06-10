@@ -111,7 +111,7 @@ const char* ShaderInterface::fragmentShaderText =
 	"    float denominator_light = hypdot(light, light) * hypdot_pos_pos - hypdot_pos_light * hypdot_pos_light;\n"
 	"    float denominator_normal = hypdot(normal, normal) * hypdot_pos_pos - hypdot_pos_normal * hypdot_pos_normal;\n"
 	"    float directness = max(0.0, -(gl_FrontFacing ? 1.0 : -1.0) * numerator / sqrt(denominator_light * denominator_normal));\n"
-	"    float depth_factor = 1.0 / sqrt(-hypdot_pos_pos);\n"
+	"    float depth_factor = 1.0 / sqrt(max(1e-3, -hypdot_pos_pos));\n"
 	"    gl_FragDepth = -pos_global.z / ((pos_global.w * depth_factor) + 1.0) * depth_factor;\n"
 	"    fragColor = vec4(texture(texture_sampler, texCoord).rgb * directness, 1.0);\n"
 	"}\n";
