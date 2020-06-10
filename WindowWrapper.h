@@ -76,13 +76,11 @@ public:
 		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
 
 		context.useShader();
-		context.setUniforms();
 		context.setTexture(TextureHandle::TILE);
 		//context.render(ModelHandle::HOROSPHERE);
 		context.setTexture(TextureHandle::BLANK);
 		context.render(ModelHandle::TREE);
 		context.addModelView(VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0));
-		context.setUniforms();
 		//context.render(ModelHandle::DODECAHEDRON);
 		//context.render(ModelHandle::PLANE);
 	}

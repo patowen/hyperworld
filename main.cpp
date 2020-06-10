@@ -18,6 +18,7 @@ int main(void) {
 		return EXIT_SUCCESS;
 	} catch (const std::runtime_error &e) {
 		fprintf(stderr, "Fatal error: %s\n", e.what());
+		fflush(stderr);
 		char str[30];
 		fgets(str, 20, stdin);
 		return EXIT_FAILURE;
