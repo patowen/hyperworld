@@ -4,10 +4,48 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(false), slow(false) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), rotationLock(false), slow(false) {
 	}
 
 	void step(double dt, const UserInput& userInput) {
+		setSwitchesFromInput(userInput);
+		setRotationFromInput(dt, userInput);
+		setVelocityFromInput(dt, userInput);
+		setPositionFromVelocity(dt);
+		setPositionFromInput(dt, userInput);
+		renormalize();
+	}
+
+	Matrix4d getCameraPos() {
+		return pos;
+	}
+
+private:
+	Matrix4d pos;
+	Vector4d vel; //Relative to camera
+	bool rotationLock;
+	bool slow;
+
+	class Inputs {
+	public:
+		InputHandle forwards = MouseButton(GLFW_MOUSE_BUTTON_1);
+		InputHandle backwards = MouseButton(GLFW_MOUSE_BUTTON_2);
+		InputHandle left = KeyboardButton(GLFW_KEY_A);
+		InputHandle right = KeyboardButton(GLFW_KEY_D);
+		InputHandle up = KeyboardButton(GLFW_KEY_W);
+		InputHandle down = KeyboardButton(GLFW_KEY_S);
+		InputHandle clockwise = KeyboardButton(GLFW_KEY_E);
+		InputHandle counterclockwise = KeyboardButton(GLFW_KEY_Q);
+
+		InputHandle toggleSpeed = KeyboardButton(GLFW_KEY_LEFT_SHIFT);
+
+		InputHandle rotationLock = KeyboardButton(GLFW_KEY_LEFT_CONTROL);
+		InputHandle goHome = KeyboardButton(GLFW_KEY_HOME);
+	};
+
+	Inputs inputs;
+
+	void setSwitchesFromInput(const UserInput& userInput) {
 		if (userInput.pressedThisStep(inputs.rotationLock)) {
 			rotationLock = !rotationLock;
 		}
@@ -15,8 +53,29 @@ public:
 		if (userInput.pressedThisStep(inputs.toggleSpeed)) {
 			slow = !slow;
 		}
+	}
 
-		Vector3d goalVel(0, 0, 0);
+	void setRotationFromInput(double dt, const UserInput& userInput) {
+		Vector2d mouseLook = userInput.getMouseLook();
+		Matrix4d rotation = Matrix4d::Identity();
+		rotation *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002);
+		rotation *= VectorMath::rotation(Vector3d(0, 1, 0), -mouseLook(0) * 0.002);
+
+		double zRotation = 0;
+		if (userInput.isPressed(inputs.clockwise)) {
+			zRotation -= 1;
+		}
+		if (userInput.isPressed(inputs.counterclockwise)) {
+			zRotation += 1;
+		}
+		rotation *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
+
+		pos *= rotation;
+		vel = VectorMath::isometricInverse(rotation) * vel;
+	}
+
+	void setVelocityFromInput(double dt, const UserInput& userInput) {
+		Vector4d goalVel(0, 0, 0, 0);
 		if (userInput.isPressed(inputs.forwards)) {
 			goalVel(2) -= 1;
 		}
@@ -43,71 +102,31 @@ public:
 		goalVel *= slow ? 0.2 : 2;
 
 		double maxChange = (slow ? 0.8 : 4) * dt;
-		Vector3d velDiff = goalVel - vel;
+		Vector4d velDiff = goalVel - vel;
 		double velDiffNorm = velDiff.norm();
 		if (velDiffNorm < maxChange) {
 			vel = goalVel;
 		} else {
 			vel += velDiff / velDiffNorm * maxChange;
 		}
+	}
 
-		handleMovement(dt);
-
-		Vector2d mouseLook = userInput.getMouseLook();
-		pos *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002);
-		pos *= VectorMath::rotation(Vector3d(0, 1, 0), -mouseLook(0) * 0.002);
-
-		double zRotation = 0;
-		if (userInput.isPressed(inputs.clockwise)) {
-			zRotation -= 1;
+	void setPositionFromVelocity(double dt) {
+		if (rotationLock) {
+			pos *= VectorMath::displacement(Vector4d(0, 0, vel(2), 0) * dt);
+			pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
+		} else {
+			pos *= VectorMath::displacement(vel * dt);
 		}
-		if (userInput.isPressed(inputs.counterclockwise)) {
-			zRotation += 1;
-		}
-		pos *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
+	}
 
-		pos = VectorMath::orthogonalizeGramSchmidt(pos);
-
+	void setPositionFromInput(double dt, const UserInput& userInput) {
 		if (userInput.isPressed(inputs.goHome)) {
 			pos = VectorMath::orthogonalizeWithSqrt(pos + Matrix4d::Identity() * dt);
 		}
 	}
 
-	Matrix4d getCameraPos() {
-		return pos;
-	}
-
-private:
-	Matrix4d pos;
-	Vector3d vel; //Relative to camera
-	bool rotationLock;
-	bool slow;
-
-	class Inputs {
-	public:
-		InputHandle forwards = MouseButton(GLFW_MOUSE_BUTTON_1);
-		InputHandle backwards = MouseButton(GLFW_MOUSE_BUTTON_2);
-		InputHandle left = KeyboardButton(GLFW_KEY_A);
-		InputHandle right = KeyboardButton(GLFW_KEY_D);
-		InputHandle up = KeyboardButton(GLFW_KEY_W);
-		InputHandle down = KeyboardButton(GLFW_KEY_S);
-		InputHandle clockwise = KeyboardButton(GLFW_KEY_E);
-		InputHandle counterclockwise = KeyboardButton(GLFW_KEY_Q);
-
-		InputHandle toggleSpeed = KeyboardButton(GLFW_KEY_LEFT_SHIFT);
-
-		InputHandle rotationLock = KeyboardButton(GLFW_KEY_LEFT_CONTROL);
-		InputHandle goHome = KeyboardButton(GLFW_KEY_HOME);
-	};
-
-	Inputs inputs;
-
-	void handleMovement(double dt) {
-		if (rotationLock) {
-			pos *= VectorMath::displacement(Vector3d(0, 0, vel(2)) * dt);
-			pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
-		} else {
-			pos *= VectorMath::displacement(vel * dt);
-		}
+	void renormalize() {
+		pos = VectorMath::orthogonalizeGramSchmidt(pos);
 	}
 };

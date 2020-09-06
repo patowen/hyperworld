@@ -103,8 +103,8 @@ namespace VectorMath {
 	}
 
 	// Moves the origin in the specified direction with a distance proportional
-	// to the magnitude of the argument
-	inline Matrix4d displacement(const Vector3d &displacement) {
+	// to the magnitude of the argument (The fourth component is assumed to be 0)
+	inline Matrix4d displacement(const Vector4d &displacement) {
 		double norm = displacement.norm();
 		double scaleFactor = norm < 1e-30 ? 1.0 : sinh(norm) / norm;
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));

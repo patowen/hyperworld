@@ -72,7 +72,7 @@ public:
 
 		context.resetModelView();
 		context.addModelView(VectorMath::isometricInverse(camera.getCameraPos()));
-		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
+		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0, 0.0}));
 		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
 
 		context.useShader();

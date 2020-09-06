@@ -114,7 +114,7 @@ Model makePrism(const ShaderInterface& shaderInterface) {
 class TreeBuilder {
 public:
 	TreeBuilder(): sideLength(acosh(3)) {
-		Matrix4d translation = VectorMath::displacement(Vector3d(0, 0, sideLength));
+		Matrix4d translation = VectorMath::displacement(Vector4d(0, 0, sideLength, 0));
 
 		recursiveTransformations.push_back(translation);
 		recursiveTransformations.push_back(translation * VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0));
