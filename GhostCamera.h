@@ -7,20 +7,15 @@ public:
 	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0), rotationLock(false), slow(false) {
 	}
 
-	void prepareCallbacks(InputListener& inputListener) {
-		inputs.rotationLock.setCallback(inputListener, [this](){onToggleRotationLock();});
-		inputs.toggleSpeed.setCallback(inputListener, [this](){onToggleSpeed();});
-	}
-
-	void onToggleRotationLock() {
-		rotationLock = !rotationLock;
-	}
-
-	void onToggleSpeed() {
-		slow = !slow;
-	}
-
 	void step(double dt, const UserInput& userInput) {
+		if (userInput.pressedThisStep(inputs.rotationLock)) {
+			rotationLock = !rotationLock;
+		}
+
+		if (userInput.pressedThisStep(inputs.toggleSpeed)) {
+			slow = !slow;
+		}
+
 		Vector3d goalVel(0, 0, 0);
 		if (userInput.isPressed(inputs.forwards)) {
 			goalVel(2) -= 1;
@@ -78,8 +73,8 @@ public:
 		}
 	}
 
-	Matrix4d getTransform() {
-		return VectorMath::isometricInverse(pos);
+	Matrix4d getCameraPos() {
+		return pos;
 	}
 
 private:

@@ -59,7 +59,7 @@ public:
 			glfwSetCursorPos(window, 0, 0);
 		}
 
-		UserInput userInput(window, mouseLook);
+		UserInput userInput(window, inputListener, mouseLook);
 		camera.step(1.0/60.0, userInput);
 
 		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
@@ -71,7 +71,7 @@ public:
 		}
 
 		context.resetModelView();
-		context.addModelView(camera.getTransform());
+		context.addModelView(VectorMath::isometricInverse(camera.getCameraPos()));
 		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0}));
 		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
 
@@ -91,8 +91,6 @@ public:
 		TextureBank textureBank;
 		RenderContext context(shaderInterface, modelBank, textureBank);
 
-		camera.prepareCallbacks(inputListener);
-
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_CULL_FACE);
@@ -102,6 +100,7 @@ public:
 			glfwGetFramebufferSize(window, &width, &height);
 			glViewport(0, 0, width, height);
 			render(width, height, context);
+			inputListener.refreshKeysPressed();
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
