@@ -1,5 +1,4 @@
 #pragma once
-#include "VectorMath.h"
 
 class RenderContext;
 

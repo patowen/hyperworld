@@ -13,6 +13,7 @@
 #include "UserInput.h"
 #include "Scene.h"
 #include "SimpleRenderNode.h"
+#include "SimpleSpawner.h"
 
 class ContextWrapper;
 
@@ -53,6 +54,7 @@ public:
 	void renderLoop() {
 		Scene scene;
 		GhostCamera camera;
+		SimpleSpawner simpleSpawner(scene, camera);
 		ShaderInterface shaderInterface;
 		ModelBank modelBank(shaderInterface);
 		TextureBank textureBank;
@@ -60,6 +62,7 @@ public:
 
 		scene.setCamera(camera);
 		scene.addEntity(camera);
+		scene.addEntity(simpleSpawner);
 		SimpleRenderNode tree(VectorMath::displacement({0.0, 0.0, -2.0, 0.0}), ModelHandle::TREE, TextureHandle::BLANK);
 		SimpleRenderNode dodeca(Matrix4d::Identity(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN);
 		scene.addRenderNode(tree);

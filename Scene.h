@@ -11,8 +11,8 @@ public:
 		renderNodes.insert(&renderNode);
 	}
 
-	void addEntity(GhostCamera& camera) {
-		entities.insert(&camera);
+	void addEntity(Entity& entity) {
+		entities.insert(&entity);
 	}
 
 	void setCamera(GhostCamera& camera) {
@@ -20,7 +20,7 @@ public:
 	}
 
 	void step(double dt, const UserInput& userInput) {
-		for (GhostCamera* entity : entities) {
+		for (Entity* entity : entities) {
 			entity->step(dt, userInput);
 		}
 	}
@@ -45,7 +45,7 @@ public:
 	}
 
 private:
-	std::unordered_set<GhostCamera*> entities;
+	std::unordered_set<Entity*> entities;
 	std::unordered_set<RenderNode*> renderNodes;
 	GhostCamera* camera = nullptr;
 };

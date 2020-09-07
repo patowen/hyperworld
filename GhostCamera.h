@@ -1,13 +1,14 @@
 #pragma once
 #include "VectorMath.h"
 #include "UserInput.h"
+#include "Entity.h"
 
-class GhostCamera {
+class GhostCamera : public Entity {
 public:
 	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), zoom(1), rotationLock(false), slow(false) {
 	}
 
-	void step(double dt, const UserInput& userInput) {
+	void step(double dt, const UserInput& userInput) override {
 		setSwitchesFromInput(dt, userInput);
 		setRotationFromInput(dt, userInput);
 		setVelocityFromInput(dt, userInput);
