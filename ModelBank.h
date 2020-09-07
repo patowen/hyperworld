@@ -48,6 +48,8 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 		builder.addPolygonFace(faceVertices);
 	}
 
+	builder.addBackFaces();
+
 	return builder.build(shaderInterface);
 }
 
@@ -79,6 +81,8 @@ Model makeHorosphere(const ShaderInterface& shaderInterface) {
 		}
 	}
 
+	builder.addBackFaces();
+
 	return builder.build(shaderInterface);
 }
 
@@ -101,12 +105,16 @@ Model makePlane(const ShaderInterface& shaderInterface) {
 		builder.addTriangle(vertices[0], vertices[(orientation + tessellation.n) % tessellation.n], vertices[(orientation * 2 + tessellation.n) % tessellation.n]);
 	}
 
+	builder.addBackFaces();
+
 	return builder.build(shaderInterface);
 }
 
 Model makePrism(const ShaderInterface& shaderInterface) {
 	ModelBuilder builder;
 	builder.addPrism(Matrix4d::Identity(), 8, 1, 2, 60);
+
+	builder.addBackFaces();
 
 	return builder.build(shaderInterface);
 }

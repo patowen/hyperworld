@@ -17,6 +17,26 @@ public:
 			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
+
+		if (userInput.pressedThisStep(inputs.spawnHorosphere)) {
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::HOROSPHERE, TextureHandle::TILE));
+			scene->addRenderNode(*simpleRenderNodes.back());
+		}
+
+		if (userInput.pressedThisStep(inputs.spawnPlane)) {
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::PLANE, TextureHandle::PERLIN));
+			scene->addRenderNode(*simpleRenderNodes.back());
+		}
+
+		if (userInput.pressedThisStep(inputs.spawnPrism)) {
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::PRISM, TextureHandle::BLANK));
+			scene->addRenderNode(*simpleRenderNodes.back());
+		}
+
+		if (userInput.pressedThisStep(inputs.spawnTree)) {
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::TREE, TextureHandle::BLANK));
+			scene->addRenderNode(*simpleRenderNodes.back());
+		}
 	}
 
 	class Inputs {

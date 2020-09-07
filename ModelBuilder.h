@@ -86,6 +86,20 @@ public:
 		}
 	}
 
+	void addBackFaces() {
+		int numExistingVertices = vertices.size();
+		for (int i = 0; i < numExistingVertices; ++i) {
+			const Vertex& existingVertex = vertices[i];
+			const std::array<float, 4>& n = existingVertex.normal;
+			vertices.emplace_back(existingVertex.pos, std::array<float, 4> { -n[0], -n[1], -n[2], -n[3] }, existingVertex.texCoord);
+		}
+
+		int numExistingElements = elements.size();
+		for (int i = 0; i < numExistingElements; i += 3) {
+			addTriangle(elements[i] + numExistingVertices, elements[i+2] + numExistingVertices, elements[i+1] + numExistingVertices);
+		}
+	}
+
 private:
 	GLuint currentVertex;
 	std::vector<Vertex> vertices;
