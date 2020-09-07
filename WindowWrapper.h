@@ -11,12 +11,14 @@
 #include "RenderContext.h"
 #include "GhostCamera.h"
 #include "UserInput.h"
+#include "Scene.h"
+#include "SimpleRenderNode.h"
 
 class ContextWrapper;
 
 class WindowWrapper {
 public:
-	WindowWrapper(const ContextWrapper &contextWrapper) : contextWrapper(contextWrapper), zoom(1) {
+	WindowWrapper(const ContextWrapper &contextWrapper) : contextWrapper(contextWrapper) {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
@@ -48,60 +50,43 @@ public:
 		glfwDestroyWindow(window);
 	}
 
-	void render(int width, int height, RenderContext &context) {
-		double ratio = width / (double)height;
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		Vector2d mouseLook(0, 0);
-		if (isMouseCaptured()) {
-			glfwGetCursorPos(window, &mouseLook(0), &mouseLook(1));
-			glfwSetCursorPos(window, 0, 0);
-		}
-
-		UserInput userInput(window, inputListener, mouseLook);
-		camera.step(1.0/60.0, userInput);
-
-		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
-			zoom *= 0.964;
-		}
-
-		if (userInput.isPressed(KeyboardButton(GLFW_KEY_P))) {
-			zoom /= 0.964;
-		}
-
-		context.resetModelView();
-		context.addModelView(VectorMath::isometricInverse(camera.getCameraPos()));
-		context.addModelView(VectorMath::displacement({0.0, 0.0, -2.0, 0.0}));
-		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
-
-		context.useShader();
-		context.setTexture(TextureHandle::TILE);
-		//context.render(ModelHandle::HOROSPHERE);
-		context.setTexture(TextureHandle::BLANK);
-		context.render(ModelHandle::TREE);
-		context.addModelView(VectorMath::rotation(Vector3d(1, 0, 0), M_TAU / 4.0));
-		//context.render(ModelHandle::DODECAHEDRON);
-		//context.render(ModelHandle::PLANE);
-	}
-
 	void renderLoop() {
+		Scene scene;
+		GhostCamera camera;
 		ShaderInterface shaderInterface;
 		ModelBank modelBank(shaderInterface);
 		TextureBank textureBank;
 		RenderContext context(shaderInterface, modelBank, textureBank);
+
+		scene.setCamera(camera);
+		scene.addEntity(camera);
+		SimpleRenderNode tree(VectorMath::displacement({0.0, 0.0, -2.0, 0.0}), ModelHandle::TREE, TextureHandle::BLANK);
+		SimpleRenderNode dodeca(Matrix4d::Identity(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN);
+		scene.addRenderNode(tree);
+		scene.addRenderNode(dodeca);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_CULL_FACE);
 
 		while (!glfwWindowShouldClose(window)) {
+			Vector2d mouseLook(0, 0);
+			if (isMouseCaptured()) {
+				glfwGetCursorPos(window, &mouseLook(0), &mouseLook(1));
+				glfwSetCursorPos(window, 0, 0);
+			}
+
+			UserInput userInput(window, inputListener, mouseLook);
+			scene.step(1.0/60.0, userInput);
+			inputListener.clearPressedThisStepList();
+
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
 			glViewport(0, 0, width, height);
-			render(width, height, context);
-			inputListener.refreshKeysPressed();
+			context.setDimensions(width, height);
+			scene.render(context);
 			glfwSwapBuffers(window);
+
 			glfwPollEvents();
 		}
 	}
@@ -137,7 +122,5 @@ public:
 private:
 	GLFWwindow* window;
 	const ContextWrapper &contextWrapper;
-	GhostCamera camera;
 	InputListener inputListener;
-	double zoom;
 };

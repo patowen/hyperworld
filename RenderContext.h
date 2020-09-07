@@ -10,8 +10,6 @@ class Model;
 class RenderContext {
 public:
 	RenderContext(ShaderInterface &shaderInterface, ModelBank &modelBank, TextureBank &textureBank) :
-		projection(Matrix4d::Identity()),
-		modelView(Matrix4d::Identity()),
 		shaderInterface(shaderInterface),
 		modelBank(modelBank),
 		textureBank(textureBank) {}
@@ -21,6 +19,19 @@ public:
 
 	RenderContext(RenderContext&& other) noexcept = default;
 	RenderContext& operator=(RenderContext&& other) noexcept = default;
+
+	void setDimensions(int width, int height) {
+		this->width = width;
+		this->height = height;
+	}
+
+	int getWidth() {
+		return width;
+	}
+
+	int getHeight() {
+		return height;
+	}
 
 	void setProjection(const Matrix4d &projection) {
 		this->projection = projection;
@@ -60,11 +71,13 @@ public:
 	}
 
 private:
-	Matrix4d projection;
-	Matrix4d modelView;
+	Matrix4d projection = Matrix4d::Identity();
+	Matrix4d modelView = Matrix4d::Identity();
 	ShaderInterface& shaderInterface;
 	ModelBank& modelBank;
 	TextureBank& textureBank;
+	int width = 1;
+	int height = 1;
 	bool projectionInvalidated = true;
 	bool modelViewInvalidated = true;
 

@@ -4,11 +4,11 @@
 
 class GhostCamera {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), rotationLock(false), slow(false) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), zoom(1), rotationLock(false), slow(false) {
 	}
 
 	void step(double dt, const UserInput& userInput) {
-		setSwitchesFromInput(userInput);
+		setSwitchesFromInput(dt, userInput);
 		setRotationFromInput(dt, userInput);
 		setVelocityFromInput(dt, userInput);
 		setPositionFromVelocity(dt);
@@ -20,9 +20,14 @@ public:
 		return pos;
 	}
 
+	double getCameraZoom() {
+		return zoom;
+	}
+
 private:
 	Matrix4d pos;
 	Vector4d vel; //Relative to camera
+	double zoom;
 	bool rotationLock;
 	bool slow;
 
@@ -45,13 +50,21 @@ private:
 
 	Inputs inputs;
 
-	void setSwitchesFromInput(const UserInput& userInput) {
+	void setSwitchesFromInput(double dt, const UserInput& userInput) {
 		if (userInput.pressedThisStep(inputs.rotationLock)) {
 			rotationLock = !rotationLock;
 		}
 
 		if (userInput.pressedThisStep(inputs.toggleSpeed)) {
 			slow = !slow;
+		}
+
+		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
+			zoom *= 0.964;
+		}
+
+		if (userInput.isPressed(KeyboardButton(GLFW_KEY_P))) {
+			zoom /= 0.964;
 		}
 	}
 

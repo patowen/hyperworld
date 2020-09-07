@@ -17,7 +17,7 @@ public:
 		keyboardKeysPressedThisStep.insert(key);
 	}
 
-	void refreshKeysPressed() {
+	void clearPressedThisStepList() {
 		mouseButtonsPressedThisStep.clear();
 		keyboardKeysPressedThisStep.clear();
 	}
