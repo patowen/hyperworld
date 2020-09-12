@@ -88,8 +88,8 @@ private:
 	void setRotationFromInput(double dt, const UserInput& userInput) {
 		Vector2d mouseLook = userInput.getMouseLook();
 		Matrix4d rotation = Matrix4d::Identity();
-		rotation *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002);
-		rotation *= VectorMath::rotation(Vector3d(0, 1, 0), -mouseLook(0) * 0.002);
+		rotation *= VectorMath::rotation(Vector3d(1, 0, 0), -mouseLook(1) * 0.002 * zoom);
+		rotation *= VectorMath::rotation(Vector3d(0, 1, 0), -mouseLook(0) * 0.002 * zoom);
 
 		double zRotation = 0;
 		if (userInput.isPressed(inputs.clockwise)) {

@@ -23,9 +23,11 @@
 
 class Texture {
 public:
-	Texture(const TextureData& data) {
+	Texture(const TextureData& data, GLint wrap) {
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, data.width, data.height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data.data());
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}

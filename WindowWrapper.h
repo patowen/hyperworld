@@ -40,7 +40,7 @@ public:
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
 		glfwWindowHint(GLFW_SAMPLES, 4);
-		window = glfwCreateWindow(640, 480, "Hyperworld", nullptr, nullptr);
+		window = glfwCreateWindow(800, 600, "Hyperworld", nullptr, nullptr);
 		if (!window) {
 			throw std::runtime_error("Failed to create window");
 		}
@@ -60,7 +60,6 @@ public:
 
 		glfwMakeContextCurrent(window);
 		gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-		glfwSwapInterval(1);
 	}
 
 	~WindowWrapper() {
@@ -100,6 +99,7 @@ public:
 			glViewport(0, 0, width, height);
 			context.setDimensions(width, height);
 			scene.render(context);
+			glfwSwapInterval(1);
 			glfwSwapBuffers(window);
 
 			glfwPollEvents();
@@ -112,6 +112,18 @@ public:
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			} else {
 				glfwSetWindowShouldClose(window, GLFW_TRUE);
+			}
+		} else if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+			fullscreen = !fullscreen;
+
+			if (fullscreen) {
+				glfwGetWindowPos(window, &windowedXPos, &windowedYPos);
+				glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
+				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, 60);
+			} else {
+				glfwSetWindowMonitor(window, NULL, windowedXPos, windowedYPos, windowedWidth, windowedHeight, GLFW_DONT_CARE);
 			}
 		} else if (action == GLFW_PRESS) {
 			inputListener.keyboardKeyPressed(key);
@@ -138,4 +150,6 @@ private:
 	GLFWwindow* window;
 	const ContextWrapper &contextWrapper;
 	InputListener inputListener;
+	bool fullscreen = false;
+	int windowedXPos, windowedYPos, windowedWidth, windowedHeight;
 };

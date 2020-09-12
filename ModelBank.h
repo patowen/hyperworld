@@ -128,7 +128,9 @@ Model makePlane(const ShaderInterface& shaderInterface) {
 
 Model makePrism(const ShaderInterface& shaderInterface) {
 	ModelBuilder builder;
-	builder.addPrism(Matrix4d::Identity(), 8, 1, 2, 60);
+	Matrix4d transform;
+	transform << 1, 0, 0, 0,  0, -1, 0, 0,  0, 0, -1, 0,  0, 0, 0, 1;
+	builder.addPrism(transform, 8, 1, 2, 60);
 
 	builder.addBackFaces();
 

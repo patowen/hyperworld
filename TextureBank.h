@@ -26,9 +26,9 @@ enum class TextureHandle {PERLIN, TILE, BLANK};
 class TextureBank {
 public:
 	TextureBank() {
-		textures[TextureHandle::PERLIN] = std::make_unique<Texture>(TextureLoader::loadTexture("perlin.png"));
-		textures[TextureHandle::TILE] = std::make_unique<Texture>(TextureLoader::loadTexture("tile.png"));
-		textures[TextureHandle::BLANK] = std::make_unique<Texture>(makeBlankTexture());
+		textures[TextureHandle::PERLIN] = std::make_unique<Texture>(TextureLoader::loadTexture("perlin.png"), GL_CLAMP_TO_EDGE);
+		textures[TextureHandle::TILE] = std::make_unique<Texture>(TextureLoader::loadTexture("tile.png"), GL_REPEAT);
+		textures[TextureHandle::BLANK] = std::make_unique<Texture>(makeBlankTexture(), GL_REPEAT);
 	}
 
 	void bind(TextureHandle textureHandle) {
