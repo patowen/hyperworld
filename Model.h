@@ -81,5 +81,5 @@ private:
 	std::array<GLuint, 2> buffers; // vertexBuffer, elementBuffer
 	GLuint vertexArray;
 	GLsizei numVertices, numElements;
-	// TODO: Texture, shader, primitive
+	// TODO: Potentially bundle with shader and primitive?
 };

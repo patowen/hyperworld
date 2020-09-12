@@ -63,10 +63,6 @@ public:
 		scene.setCamera(camera);
 		scene.addEntity(camera);
 		scene.addEntity(simpleSpawner);
-		SimpleRenderNode tree(VectorMath::displacement({0.0, 0.0, -2.0, 0.0}), ModelHandle::TREE, TextureHandle::BLANK);
-		SimpleRenderNode dodeca(Matrix4d::Identity(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN);
-		scene.addRenderNode(tree);
-		scene.addRenderNode(dodeca);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
