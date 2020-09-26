@@ -49,7 +49,7 @@ cd ../..
 cd glfw-3.3.2
 mkdir build
 cd build
-cmake .. -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=../../../dependencies
+cmake .. -G "MinGW Makefiles" -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DCMAKE_INSTALL_PREFIX=../../../dependencies
 mingw32-make
 mingw32-make install
 cd ../..
