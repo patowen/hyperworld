@@ -101,7 +101,7 @@ private:
 		rotation *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
 
 		pos *= rotation;
-		vel = VectorMath::isometricInverse(rotation) * vel;
+		vel = VectorMath::hyperbolicTranspose(rotation) * vel;
 	}
 
 	void setVelocityFromInput(double dt, const UserInput& userInput) {
@@ -143,20 +143,20 @@ private:
 
 	void setPositionFromVelocity(double dt) {
 		if (rotationLock) {
-			pos *= VectorMath::displacement(Vector4d(0, 0, vel(2), 0) * dt);
+			pos *= VectorMath::hyperbolicDisplacement(Vector4d(0, 0, vel(2), 0) * dt);
 			pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
 		} else {
-			pos *= VectorMath::displacement(vel * dt);
+			pos *= VectorMath::hyperbolicDisplacement(vel * dt);
 		}
 	}
 
 	void setPositionFromInput(double dt, const UserInput& userInput) {
 		if (userInput.isPressed(inputs.goHome)) {
-			pos = VectorMath::orthogonalizeWithSqrt(pos + Matrix4d::Identity() * dt);
+			pos = VectorMath::hyperbolicSvdUnitary(pos + Matrix4d::Identity() * dt);
 		}
 	}
 
 	void renormalize() {
-		pos = VectorMath::orthogonalizeGramSchmidt(pos);
+		pos = VectorMath::hyperbolicQrUnitary(pos);
 	}
 };

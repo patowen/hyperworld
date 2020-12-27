@@ -16,9 +16,13 @@
 
 #include "VectorMath.h"
 #include <unsupported/Eigen/MatrixFunctions>
+#include <Eigen/SVD>
 
-namespace VectorMath {
-	Matrix4d orthogonalizeWithSqrt(const Matrix4d& matrix) {
-		return matrix * (isometricInverse(matrix) * matrix).sqrt().inverse();
-	}
+Matrix4d VectorMath::hyperbolicSvdUnitary(const Matrix4d& matrix) {
+	return matrix * (hyperbolicTranspose(matrix) * matrix).sqrt().inverse();
+}
+
+Matrix4d VectorMath::sphericalSvdUnitary(const Matrix4d& matrix) {
+	Eigen::JacobiSVD<Matrix4d> svd(matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
+	return svd.matrixU() * svd.matrixV().adjoint();
 }

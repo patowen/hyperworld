@@ -86,7 +86,7 @@ public:
 			for (int step = 0; step <= steps; ++step) {
 				prismSide.emplace_back();
 				auto& prismSection = prismSide.back();
-				Matrix4d stepTransform = transform * VectorMath::displacement(Vector4d(0, 0, length * step / steps, 0));
+				Matrix4d stepTransform = transform * VectorMath::hyperbolicDisplacement(Vector4d(0, 0, length * step / steps, 0));
 				for (int k=0; k<2; k++) {
 					prismSection[k] = addVertex(stepTransform * basePos[k], stepTransform * baseNormal, Vector2d((double)step / steps, (double)(side + k) / sides));
 				}

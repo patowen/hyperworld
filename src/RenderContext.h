@@ -105,7 +105,7 @@ private:
 
 		if (modelViewInvalidated) {
 			shaderInterface.setModelView(modelView.cast<float>());
-			shaderInterface.setLightPos((VectorMath::isometricInverse(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
+			shaderInterface.setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
 			modelViewInvalidated = false;
 		}
 	}

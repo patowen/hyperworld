@@ -47,7 +47,7 @@ public:
 		for (int i=0; i<n; ++i) {
 			Vector4d normal = VectorMath::hyperbolicNormal(faceVertices[(i+1) % n], faceVertices[(i+2) % n], Vector4d::UnitZ());
 			normal /= sqrt(VectorMath::hyperbolicSqrNorm(normal));
-			reflections[i] = VectorMath::reflection(normal);
+			reflections[i] = VectorMath::hyperbolicReflection(normal);
 		}
 	}
 
