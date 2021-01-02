@@ -20,7 +20,7 @@
 #include "ModelBuilder.h"
 #include "Tessellation.h"
 
-Model makeDodecahedron(const ShaderInterface& shaderInterface) {
+Model makeDodecahedron() {
 	float s = 0.31546169558954995f;
 	float goldenRatio = (1.0f + sqrtf(5.0f)) / 2.0f;
 	float q = s / goldenRatio, p = s * goldenRatio;
@@ -66,10 +66,10 @@ Model makeDodecahedron(const ShaderInterface& shaderInterface) {
 
 	builder.addBackFaces();
 
-	return builder.build(shaderInterface);
+	return builder.build();
 }
 
-Model makeHorosphere(const ShaderInterface& shaderInterface) {
+Model makeHorosphere() {
 	int numSteps = 400;
 	double size = 20;
 	double textureSize = 5;
@@ -99,10 +99,10 @@ Model makeHorosphere(const ShaderInterface& shaderInterface) {
 
 	builder.addBackFaces();
 
-	return builder.build(shaderInterface);
+	return builder.build();
 }
 
-Model makePlane(const ShaderInterface& shaderInterface) {
+Model makePlane() {
 	ModelBuilder builder;
 	Tessellation tessellation;
 	tessellation.testTessellation();
@@ -123,10 +123,10 @@ Model makePlane(const ShaderInterface& shaderInterface) {
 
 	builder.addBackFaces();
 
-	return builder.build(shaderInterface);
+	return builder.build();
 }
 
-Model makePrism(const ShaderInterface& shaderInterface) {
+Model makePrism() {
 	ModelBuilder builder;
 	Matrix4d transform;
 	transform << 1, 0, 0, 0,  0, -1, 0, 0,  0, 0, -1, 0,  0, 0, 0, 1;
@@ -134,7 +134,7 @@ Model makePrism(const ShaderInterface& shaderInterface) {
 
 	builder.addBackFaces();
 
-	return builder.build(shaderInterface);
+	return builder.build();
 }
 
 class TreeBuilder {
@@ -177,12 +177,12 @@ private:
 	double sideLength;
 };
 
-Model makeTree(const ShaderInterface& shaderInterface) {
+Model makeTree() {
 	ModelBuilder builder;
 
 	TreeBuilder().buildTree(builder, Matrix4d::Identity(), 7);
 
-	return builder.build(shaderInterface);
+	return builder.build();
 }
 
 enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE};
@@ -190,11 +190,11 @@ enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE};
 class ModelBank {
 public:
 	ModelBank(const ShaderInterface& shaderInterface) {
-		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron(shaderInterface));
-		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere(shaderInterface));
-		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane(shaderInterface));
-		models[ModelHandle::PRISM] = std::make_unique<Model>(makePrism(shaderInterface));
-		models[ModelHandle::TREE] = std::make_unique<Model>(makeTree(shaderInterface));
+		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron());
+		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere());
+		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane());
+		models[ModelHandle::PRISM] = std::make_unique<Model>(makePrism());
+		models[ModelHandle::TREE] = std::make_unique<Model>(makeTree());
 	}
 
 	void render(ModelHandle model) {

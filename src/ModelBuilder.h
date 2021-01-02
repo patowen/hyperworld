@@ -28,8 +28,8 @@ class ModelBuilder {
 public:
 	ModelBuilder(): currentVertex(0) {}
 
-	Model build(const ShaderInterface& shaderInterface) {
-		return Model(shaderInterface, vertices, elements);
+	Model build() {
+		return Model(vertices, elements);
 	}
 
 	// Primitive functions

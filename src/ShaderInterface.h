@@ -17,6 +17,7 @@
 #pragma once
 #include "glad.h"
 #include "VectorMath.h"
+#include "Model.h"
 
 class ShaderInterface {
 public:
@@ -47,9 +48,9 @@ public:
 		projectionLocation = glGetUniformLocation(program, "projection");
 		modelViewLocation = glGetUniformLocation(program, "modelView");
 		lightPosLocation = glGetUniformLocation(program, "light");
-		vPosLocation = glGetAttribLocation(program, "vPos");
-		vNormalLocation = glGetAttribLocation(program, "vNormal");
-		vTexCoordLocation = glGetAttribLocation(program, "vTexCoord");
+		glBindAttribLocation(program, Model::vPosLocation, "vPos");
+		glBindAttribLocation(program, Model::vNormalLocation, "vNormal");
+		glBindAttribLocation(program, Model::vTexCoordLocation, "vTexCoord");
 	}
 
 	~ShaderInterface() {
@@ -82,8 +83,7 @@ private:
 	static const char* fragmentShaderText;
 
 	GLuint vertexShader, fragmentShader, program;
-	GLint projectionLocation, modelViewLocation, lightPosLocation, vPosLocation, vNormalLocation, vTexCoordLocation;
-	friend class Model;
+	GLint projectionLocation, modelViewLocation, lightPosLocation;
 };
 
 const char* ShaderInterface::vertexShaderText = "#version 150\n"
