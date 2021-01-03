@@ -18,15 +18,15 @@
 #include <unordered_map>
 #include <memory>
 #include "VectorMath.h"
-#include "ShaderInterface.h"
+#include "ShaderProgramBank.h"
 #include "ModelBank.h"
 
 class Model;
 
 class RenderContext {
 public:
-	RenderContext(ShaderInterface &shaderInterface, ModelBank &modelBank, TextureBank &textureBank) :
-		shaderInterface(shaderInterface),
+	RenderContext(ShaderProgramBank &shaderProgramBank, ModelBank &modelBank, TextureBank &textureBank) :
+		shaderProgramBank(shaderProgramBank),
 		modelBank(modelBank),
 		textureBank(textureBank) {}
 
@@ -74,7 +74,13 @@ public:
 	}
 
 	void useShader() {
-		shaderInterface.use();
+		ShaderProgram* nextShaderProgram = &shaderProgramBank.get(ShaderProgramHandle::HYPERBOLIC);
+		if (nextShaderProgram != currentShaderProgram) {
+			currentShaderProgram = nextShaderProgram;
+			currentShaderProgram->use();
+			projectionInvalidated = true;
+			modelViewInvalidated = true;
+		}
 	}
 
 	void setTexture(TextureHandle texture) {
@@ -89,7 +95,8 @@ public:
 private:
 	Matrix4d projection = Matrix4d::Identity();
 	Matrix4d modelView = Matrix4d::Identity();
-	ShaderInterface& shaderInterface;
+	ShaderProgramBank& shaderProgramBank;
+	ShaderProgram* currentShaderProgram = nullptr;
 	ModelBank& modelBank;
 	TextureBank& textureBank;
 	int width = 1;
@@ -98,14 +105,18 @@ private:
 	bool modelViewInvalidated = true;
 
 	void setUniforms() {
+		if (currentShaderProgram == nullptr) {
+			return;
+		}
+
 		if (projectionInvalidated) {
-			shaderInterface.setProjection(projection.cast<float>());
+			currentShaderProgram->setProjection(projection.cast<float>());
 			projectionInvalidated = false;
 		}
 
 		if (modelViewInvalidated) {
-			shaderInterface.setModelView(modelView.cast<float>());
-			shaderInterface.setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
+			currentShaderProgram->setModelView(modelView.cast<float>());
+			currentShaderProgram->setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
 			modelViewInvalidated = false;
 		}
 	}

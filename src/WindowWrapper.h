@@ -21,7 +21,7 @@
 
 #include <stdexcept>
 #include "VectorMath.h"
-#include "ShaderInterface.h"
+#include "ShaderProgramBank.h"
 #include "ModelBank.h"
 #include "TextureBank.h"
 #include "RenderContext.h"
@@ -70,10 +70,10 @@ public:
 		Scene scene;
 		GhostCamera camera;
 		SimpleSpawner simpleSpawner(scene, camera);
-		ShaderInterface shaderInterface;
-		ModelBank modelBank(shaderInterface);
+		ModelBank modelBank;
 		TextureBank textureBank;
-		RenderContext context(shaderInterface, modelBank, textureBank);
+		ShaderProgramBank shaderProgramBank;
+		RenderContext context(shaderProgramBank, modelBank, textureBank);
 
 		scene.setCamera(camera);
 		scene.addEntity(camera);

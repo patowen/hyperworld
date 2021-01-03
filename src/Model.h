@@ -97,6 +97,6 @@ private:
 	GLuint vertexArray;
 	GLsizei numVertices, numElements;
 	static const GLuint vPosLocation = 0, vNormalLocation = 1, vTexCoordLocation = 2;
-	friend class ShaderInterface;
+	friend class ShaderProgram;
 	// TODO: Potentially bundle with shader and primitive?
 };

@@ -22,7 +22,7 @@
 #include "TextureLoader.h"
 
 namespace TextureLoader {
-	TextureData loadTexture(std::string name) {
+	TextureData loadTexture(const std::string& name) {
 		std::string texturePath = "textures/" + name;
 
 		FILE *fp = fopen(texturePath.c_str(), "rb");

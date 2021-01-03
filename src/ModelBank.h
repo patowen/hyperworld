@@ -189,7 +189,7 @@ enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE};
 
 class ModelBank {
 public:
-	ModelBank(const ShaderInterface& shaderInterface) {
+	ModelBank() {
 		models[ModelHandle::DODECAHEDRON] = std::make_unique<Model>(makeDodecahedron());
 		models[ModelHandle::HOROSPHERE] = std::make_unique<Model>(makeHorosphere());
 		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane());

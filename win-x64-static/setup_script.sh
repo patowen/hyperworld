@@ -61,3 +61,4 @@ cd build
 cmake ../src -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=../win-x64-static/dependencies
 mingw32-make
 cp -r ../src/textures .
+cp -r ../src/shaders .
