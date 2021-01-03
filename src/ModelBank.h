@@ -25,6 +25,7 @@ Model makeDodecahedron() {
 	float goldenRatio = (1.0f + sqrtf(5.0f)) / 2.0f;
 	float q = s / goldenRatio, p = s * goldenRatio;
 
+	// Factor to convert from Poincare ball model to hyperboloid model
 	float factor = 2.0f / (1.0f - s * s * 3.0f);
 
 	std::array<std::array<std::array<float, 3>, 5>, 12> table = {{
@@ -44,9 +45,6 @@ Model makeDodecahedron() {
 		{{{-q, -p,  0}, {-s, -s,  s}, {-p,  0,  q}, {-p,  0, -q}, {-s, -s, -s}}},
 	}};
 
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> elements;
-
 	ModelBuilder builder;
 
 	for (const auto& face : table) {
@@ -61,7 +59,43 @@ Model makeDodecahedron() {
 			);
 		}
 
-		builder.addPolygonFace(faceVertices);
+		builder.addHyperbolicPolygonFace(faceVertices);
+	}
+
+	builder.addBackFaces();
+
+	return builder.build();
+}
+
+Model makeSphericalTetrahedron() {
+	float s = 1.0f;
+	float cos_s = cosf(s);
+	float sin_s = sinf(s);
+
+	float normalization_factor = sqrtf(1.0f / 3.0f);
+
+	std::array<std::array<std::array<float, 3>, 3>, 4> table = {{
+		{{{ 1,  1,  1}, { 1, -1, -1}, {-1,  1, -1}}},
+		{{{ 1,  1,  1}, {-1,  1, -1}, {-1, -1,  1}}},
+		{{{ 1,  1,  1}, {-1, -1,  1}, { 1, -1, -1}}},
+		{{{-1, -1,  1}, {-1,  1, -1}, { 1, -1, -1}}},
+	}};
+
+	ModelBuilder builder;
+
+	for (const auto& face : table) {
+		std::vector<Vector4d> faceVertices;
+
+		for (const auto& faceVertexData : face) {
+			faceVertices.emplace_back(
+				faceVertexData[0] * normalization_factor * sin_s,
+				faceVertexData[1] * normalization_factor * sin_s,
+				faceVertexData[2] * normalization_factor * sin_s,
+				cos_s
+			);
+		}
+
+		builder.addSphericalPolygonFace(faceVertices);
 	}
 
 	builder.addBackFaces();
@@ -185,7 +219,7 @@ Model makeTree() {
 	return builder.build();
 }
 
-enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE};
+enum class ModelHandle {DODECAHEDRON, HOROSPHERE, PLANE, PRISM, TREE, SPHERICAL_TETRAHEDRON};
 
 class ModelBank {
 public:
@@ -195,6 +229,8 @@ public:
 		models[ModelHandle::PLANE] = std::make_unique<Model>(makePlane());
 		models[ModelHandle::PRISM] = std::make_unique<Model>(makePrism());
 		models[ModelHandle::TREE] = std::make_unique<Model>(makeTree());
+
+		models[ModelHandle::SPHERICAL_TETRAHEDRON] = std::make_unique<Model>(makeSphericalTetrahedron());
 	}
 
 	void render(ModelHandle model) {

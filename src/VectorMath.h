@@ -27,10 +27,11 @@ constexpr auto M_TAU = 6.2831853071795864769252867665590057683943;
 class VectorMath {
 public:
 	static Matrix4d perspective(double x, double y, double zNear, double zFar) {
+		// TODO: Reconsider use of zNear and zFar
 		Matrix4d result;
 		result << 2.0/x, 0.0, 0.0, 0.0,
 			0.0, 2.0/y, 0.0, 0.0,
-			0.0, 0.0, -(zFar + zNear) / (zFar - zNear), -2.0*(zFar * zNear) / (zFar - zNear),
+			0.0, 0.0, 0.0, 0.0,
 			0.0, 0.0, -1.0, 0.0;
 		return result;
 	}
@@ -45,7 +46,7 @@ public:
 	}
 
 	// Moves the origin to the specified position
-	static Matrix4d translation(const Vector4d &v) {
+	static Matrix4d hyperbolicTranslation(const Vector4d &v) {
 		Matrix4d result;
 		double x = v.x(), y = v.y(), z = v.z(), w = v.w();
 		double f = 1.0 / (w + 1.0);
@@ -53,6 +54,17 @@ public:
 			x*y*f, y*y*f + 1, y*z*f, y,
 			x*z*f, y*z*f, z*z*f + 1, z,
 			x, y, z, w;
+		return result;
+	}
+
+	static Matrix4d sphericalTranslation(const Vector4d &v) {
+		Matrix4d result;
+		double x = v.x(), y = v.y(), z = v.z(), w = v.w();
+		double f = 1.0 / (w + 1.0);
+		result << 1 - x*x*f, x*y*f, x*z*f, x,
+			x*y*f, 1 - y*y*f, y*z*f, y,
+			x*z*f, y*z*f, 1 - z*z*f, z,
+			-x, -y, -z, w;
 		return result;
 	}
 
@@ -137,14 +149,14 @@ public:
 		double norm = displacement.norm();
 		double scaleFactor = norm < 1e-30 ? 1.0 : sinh(norm) / norm;
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cosh(norm));
-		return translation(translateVector);
+		return hyperbolicTranslation(translateVector);
 	}
 
 	static Matrix4d sphericalDisplacement(const Vector4d &displacement) {
 		double norm = displacement.norm();
 		double scaleFactor = norm < 1e-30 ? 1.0 : sin(norm) / norm;
 		Vector4d translateVector(displacement.x() * scaleFactor, displacement.y() * scaleFactor, displacement.z() * scaleFactor, cos(norm));
-		return translation(translateVector);
+		return sphericalTranslation(translateVector);
 	}
 
 	static Matrix4d hyperbolicQrUnitary(const Matrix4d& matrix) {

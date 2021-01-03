@@ -30,27 +30,27 @@ public:
 
 	void step(double dt, const UserInput& userInput) override {
 		if (userInput.pressedThisStep(inputs.spawnDodecahedron)) {
-			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN));
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getPos(), ModelHandle::DODECAHEDRON, TextureHandle::PERLIN));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
 
 		if (userInput.pressedThisStep(inputs.spawnHorosphere)) {
-			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::HOROSPHERE, TextureHandle::TILE));
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getPos(), ModelHandle::HOROSPHERE, TextureHandle::TILE));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
 
 		if (userInput.pressedThisStep(inputs.spawnPlane)) {
-			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::PLANE, TextureHandle::PERLIN));
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getPos(), ModelHandle::PLANE, TextureHandle::PERLIN));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
 
 		if (userInput.pressedThisStep(inputs.spawnPrism)) {
-			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::PRISM, TextureHandle::BLANK));
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getPos(), ModelHandle::PRISM, TextureHandle::BLANK));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
 
 		if (userInput.pressedThisStep(inputs.spawnTree)) {
-			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getCameraPos(), ModelHandle::TREE, TextureHandle::BLANK));
+			simpleRenderNodes.emplace_back(std::make_unique<SimpleRenderNode>(spawnCursor->getPos(), ModelHandle::TREE, TextureHandle::BLANK));
 			scene->addRenderNode(*simpleRenderNodes.back());
 		}
 	}

@@ -49,10 +49,25 @@ public:
 	}
 
 	// Enhanced functions
-	void addPolygonFace(std::vector<Vector4d> positions) {
+	void addHyperbolicPolygonFace(std::vector<Vector4d> positions) {
 		auto n = positions.size();
 
 		Vector4d normal = VectorMath::hyperbolicNormal(positions[0], positions[n / 3], positions[(n * 2) / 3]);
+
+		std::vector<GLuint> vertices;
+		for (int i = 0; i < n; ++i) {
+			vertices.push_back(addVertex(positions[i], normal, Vector2d(0.5 + 0.5 * cos(i * M_TAU / n), 0.5 + 0.5 * sin(i * M_TAU / n))));
+		}
+
+		for (decltype(n) i = 1; i < n - 1; ++i) {
+			addTriangle(vertices[0], vertices[i], vertices[i+1]);
+		}
+	}
+
+	void addSphericalPolygonFace(std::vector<Vector4d> positions) {
+		auto n = positions.size();
+
+		Vector4d normal = VectorMath::sphericalNormal(positions[0], positions[n / 3], positions[(n * 2) / 3]);
 
 		std::vector<GLuint> vertices;
 		for (int i = 0; i < n; ++i) {
@@ -80,7 +95,7 @@ public:
 				Vector4d(cos(angle0) * sinh(radius), sin(angle0) * sinh(radius), 0, cosh(radius)),
 				Vector4d(cos(angle1) * sinh(radius), sin(angle1) * sinh(radius), 0, cosh(radius))
 			};
-			Vector4d baseNormal = VectorMath::hyperbolicNormal(basePos[0], basePos[1], VectorMath::translation(basePos[0]) * Vector4d(0, 0, 1, sqrt(2)));
+			Vector4d baseNormal = VectorMath::hyperbolicNormal(basePos[0], basePos[1], VectorMath::hyperbolicTranslation(basePos[0]) * Vector4d(0, 0, 1, sqrt(2)));
 			baseNormal /= sqrt(VectorMath::hyperbolicSqrNorm(baseNormal));
 
 			for (int step = 0; step <= steps; ++step) {

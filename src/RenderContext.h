@@ -73,18 +73,14 @@ public:
 		modelViewInvalidated = true;
 	}
 
-	void useShader() {
-		ShaderProgram* nextShaderProgram = &shaderProgramBank.get(ShaderProgramHandle::HYPERBOLIC);
-		if (nextShaderProgram != currentShaderProgram) {
-			currentShaderProgram = nextShaderProgram;
-			currentShaderProgram->use();
-			projectionInvalidated = true;
-			modelViewInvalidated = true;
-		}
-	}
-
 	void setTexture(TextureHandle texture) {
 		textureBank.bind(texture);
+	}
+
+	void setSpherical(bool spherical) {
+		this->spherical = spherical;
+		shaderProgramHandle = spherical ? ShaderProgramHandle::SPHERICAL : ShaderProgramHandle::HYPERBOLIC;
+		shaderProgramInvalidated = true;
 	}
 
 	void render(ModelHandle model) {
@@ -96,27 +92,33 @@ private:
 	Matrix4d projection = Matrix4d::Identity();
 	Matrix4d modelView = Matrix4d::Identity();
 	ShaderProgramBank& shaderProgramBank;
-	ShaderProgram* currentShaderProgram = nullptr;
+	ShaderProgramHandle shaderProgramHandle = ShaderProgramHandle::HYPERBOLIC;
 	ModelBank& modelBank;
 	TextureBank& textureBank;
 	int width = 1;
 	int height = 1;
+	bool shaderProgramInvalidated = true;
 	bool projectionInvalidated = true;
 	bool modelViewInvalidated = true;
+	bool spherical = false;
 
 	void setUniforms() {
-		if (currentShaderProgram == nullptr) {
-			return;
+		ShaderProgram& shaderProgram = shaderProgramBank.get(shaderProgramHandle);
+
+		if (shaderProgramInvalidated) {
+			shaderProgram.use();
+			projectionInvalidated = true;
+			modelViewInvalidated = true;
 		}
 
 		if (projectionInvalidated) {
-			currentShaderProgram->setProjection(projection.cast<float>());
+			shaderProgram.setProjection(projection.cast<float>());
 			projectionInvalidated = false;
 		}
 
 		if (modelViewInvalidated) {
-			currentShaderProgram->setModelView(modelView.cast<float>());
-			currentShaderProgram->setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
+			shaderProgram.setModelView(modelView.cast<float>());
+			shaderProgram.setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
 			modelViewInvalidated = false;
 		}
 	}

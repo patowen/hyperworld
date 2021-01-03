@@ -75,9 +75,14 @@ public:
 		ShaderProgramBank shaderProgramBank;
 		RenderContext context(shaderProgramBank, modelBank, textureBank);
 
+		camera.setSpherical(false);
+		context.setSpherical(false);
+
 		scene.setCamera(camera);
 		scene.addEntity(camera);
 		scene.addEntity(simpleSpawner);
+		//SimpleRenderNode tetra(Matrix4d::Identity(), ModelHandle::SPHERICAL_TETRAHEDRON, TextureHandle::PERLIN);
+		//scene.addRenderNode(tetra);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);

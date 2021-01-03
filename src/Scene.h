@@ -52,9 +52,8 @@ public:
 		context.setProjection(VectorMath::perspective(ratio * zoom, zoom, 0.01, 10));
 
 		context.resetModelView();
-		context.addModelView(VectorMath::hyperbolicTranspose(camera->getCameraPos()));
+		context.addModelView(camera->getCameraTransform());
 
-		context.useShader();
 		for (RenderNode* renderNode : renderNodes) {
 			renderNode->render(context);
 		}

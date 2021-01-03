@@ -20,12 +20,13 @@
 #include "ShaderProgram.h"
 #include "ShaderProgramLoader.h"
 
-enum class ShaderProgramHandle {HYPERBOLIC};
+enum class ShaderProgramHandle {HYPERBOLIC, SPHERICAL};
 
 class ShaderProgramBank {
 public:
 	ShaderProgramBank() {
 		shaderPrograms[ShaderProgramHandle::HYPERBOLIC] = std::make_unique<ShaderProgram>(ShaderProgramLoader::loadShaderProgram("hyperbolic"));
+		shaderPrograms[ShaderProgramHandle::SPHERICAL] = std::make_unique<ShaderProgram>(ShaderProgramLoader::loadShaderProgram("spherical"));
 	}
 
 	ShaderProgram& get(ShaderProgramHandle shaderProgramHandle) {

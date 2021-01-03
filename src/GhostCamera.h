@@ -21,7 +21,11 @@
 
 class GhostCamera : public Entity {
 public:
-	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), zoom(1), rotationLock(false), slow(false) {
+	GhostCamera(): pos(Matrix4d::Identity()), vel(0, 0, 0, 0), zoom(1), rotationLock(false), slow(false), spherical(false) {
+	}
+
+	void setSpherical(bool spherical) {
+		this->spherical = spherical;
 	}
 
 	void step(double dt, const UserInput& userInput) override {
@@ -33,8 +37,12 @@ public:
 		renormalize();
 	}
 
-	Matrix4d getCameraPos() {
+	Matrix4d getPos() {
 		return pos;
+	}
+
+	Matrix4d getCameraTransform() {
+		return spherical ? pos.adjoint() : VectorMath::hyperbolicTranspose(pos);
 	}
 
 	double getCameraZoom() {
@@ -47,6 +55,7 @@ private:
 	double zoom;
 	bool rotationLock;
 	bool slow;
+	bool spherical;
 
 	class Inputs {
 	public:
@@ -101,7 +110,7 @@ private:
 		rotation *= VectorMath::rotation(Vector3d(0, 0, 1), zRotation * dt);
 
 		pos *= rotation;
-		vel = VectorMath::hyperbolicTranspose(rotation) * vel;
+		vel = rotation.adjoint() * vel;
 	}
 
 	void setVelocityFromInput(double dt, const UserInput& userInput) {
@@ -142,21 +151,26 @@ private:
 	}
 
 	void setPositionFromVelocity(double dt) {
-		if (rotationLock) {
-			pos *= VectorMath::hyperbolicDisplacement(Vector4d(0, 0, vel(2), 0) * dt);
-			pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
+		if (spherical) {
+			pos *= VectorMath::sphericalDisplacement(vel * dt);
 		} else {
-			pos *= VectorMath::hyperbolicDisplacement(vel * dt);
+			if (rotationLock) {
+				pos *= VectorMath::hyperbolicDisplacement(Vector4d(0, 0, vel(2), 0) * dt);
+				pos *= VectorMath::horoRotation(vel(0) * dt, vel(1) * dt);
+			} else {
+				pos *= VectorMath::hyperbolicDisplacement(vel * dt);
+			}
 		}
 	}
 
 	void setPositionFromInput(double dt, const UserInput& userInput) {
 		if (userInput.isPressed(inputs.goHome)) {
-			pos = VectorMath::hyperbolicSvdUnitary(pos + Matrix4d::Identity() * dt);
+			Matrix4d notNormalized = pos + Matrix4d::Identity() * dt;
+			pos = spherical ? VectorMath::sphericalSvdUnitary(notNormalized) : VectorMath::hyperbolicSvdUnitary(notNormalized);
 		}
 	}
 
 	void renormalize() {
-		pos = VectorMath::hyperbolicQrUnitary(pos);
+		pos = spherical ? VectorMath::sphericalQrUnitary(pos) : VectorMath::hyperbolicQrUnitary(pos);
 	}
 };
