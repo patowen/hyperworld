@@ -118,7 +118,7 @@ private:
 
 		if (modelViewInvalidated) {
 			shaderProgram.setModelView(modelView.cast<float>());
-			shaderProgram.setLightPos((VectorMath::hyperbolicTranspose(modelView) * Vector4d(0, 0, 0, 1)).cast<float>());
+			shaderProgram.setLightPos(((spherical ? modelView.transpose() : VectorMath::hyperbolicTranspose(modelView)) * Vector4d(0, 0, 0, 1)).cast<float>());
 			modelViewInvalidated = false;
 		}
 	}
