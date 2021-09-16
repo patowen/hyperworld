@@ -1,0 +1,28 @@
+The purpose of this document is to figure out which direction to take this project.
+
+Goal: Create a straighforward workflow for adding a feature.
+	Feature examples:
+		Kind of geometry (Hyperbolic vs spherical vs Euclidean vs H2+E vs Nil?) - Low priority for now, focus is on hyperbolic
+		Shader program - Low priority for now, could slow down touching up existing shaders
+		Control - Keyboard control or mouse control, may be contextual, ideally configurable and self-documenting
+		Different camera logic
+		2D hud (point toward waypoints)
+		Menu
+		Configuration files (save a scene and/or interpolated camera path)
+		Movable origin with high-precision arithmetic or 3D tessellation (to allow for more exploration)
+		Collision checking (stick with spheres on geometry for simplicity)
+		Clicking on objects
+		Model editing
+		Geogebra-like features (how to render points and lines)
+		Intelligently-rendered infinite objects (follow the camera, use level-of-detail)
+
+Goal: Improve workflow for contributors
+	VSCode tutorial
+	Add comment on every line on CMakeLists.txt
+	Don't require copying configuration files when testing code
+	Create Linux setup script
+
+Math to figure out:
+	Advanced collision checking like line vs line, finding the closest point efficiently if possible
+	Coordinates of tetrahedron vertices given edge dihedral angles (Useful for 3D tessellation)
+	How to mitigate error amplification if infinite object viewed a long distance from its origin
