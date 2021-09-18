@@ -18,7 +18,6 @@ Goal: Create a straighforward workflow for adding a feature.
 
 Goal: Improve workflow for contributors
 	VSCode tutorial
-	Add comment on every line on CMakeLists.txt
 	Don't require copying configuration files when testing code
 	Create Linux setup script
 

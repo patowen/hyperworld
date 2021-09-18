@@ -11,6 +11,7 @@
 1. Navigate to this directory (win-x64-static).
 1. Run the setup script with `./setup_script.sh`. This script should not be run from another directory.
 1. The executable should be able to found under the "build" directory in the repository. Launch it normally to try it out.
+1. If it works, a window should open with a black screen. Press the "1" number key (the one on the main keyboard, not the numpad) to spawn a dodecahedron. You can then look around with the mouse and fly around with the WASD keys and mouse buttons.
 
 ## Rebuilding
 After making changes, to rebuild, simply run `./mingw32-make` from the "build" directory with a MSYS MINGW64 console.
