@@ -7,17 +7,21 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # OpenGL is used for all 3D rendering
+# https://cmake.org/cmake/help/latest/module/FindOpenGL.html
 find_package(OpenGL REQUIRED)
 
 # Eigen is used to help with math involving vectors. Instructions on how to include Eigen on CMake projects are in Eigen's
 # documentation, not in CMake's documentation like some other libraries.
+# https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # The libpng library is needed to load PNG textures
+# https://cmake.org/cmake/help/latest/module/FindPNG.html
 find_package(PNG REQUIRED)
 
 # GLFW provides a simple cross-platform way to set up an OpenGL rendering context and add keyboard and mouse controls.
 # CMake instructions are in GLFW's build guide (With CMake and installed GLFW binaries)
+# https://www.glfw.org/docs/3.3/build_guide.html#build_link_cmake_package
 find_package(glfw3 3.3 REQUIRED)
 
 add_definitions(${PNG_DEFINITIONS}) # See CMake documentation for FindPNG
