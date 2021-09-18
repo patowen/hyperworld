@@ -81,8 +81,8 @@ public:
 		scene.setCamera(camera);
 		scene.addEntity(camera);
 		scene.addEntity(simpleSpawner);
-		//SimpleRenderNode tetra(Matrix4d::Identity(), ModelHandle::SPHERICAL_TETRAHEDRON, TextureHandle::PERLIN);
-		//scene.addRenderNode(tetra);
+
+		double previousFrameTime = 0;
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_FRAMEBUFFER_SRGB);
@@ -96,8 +96,23 @@ public:
 			}
 
 			UserInput userInput(window, inputListener, mouseLook);
-			scene.step(1.0/60.0, userInput);
-			inputListener.clearPressedThisStepList();
+
+			double currentFrameTime = glfwGetTime();
+			if (currentFrameTime != 0) {
+				if (previousFrameTime != 0) {
+					// Get amount of time passed since last frame
+					double timeInFrame = currentFrameTime - previousFrameTime;
+					if (timeInFrame > 0.05) {
+						// Don't advance over 1/20 of a second in a single frame
+						timeInFrame = 0.05;
+					}
+
+					// Advance the scene by the amount of time passed since last frame
+					scene.step(timeInFrame, userInput);
+					inputListener.clearPressedThisStepList();
+				}
+				previousFrameTime = currentFrameTime;
+			}
 
 			int width, height;
 			glfwGetFramebufferSize(window, &width, &height);
@@ -126,7 +141,7 @@ public:
 				glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
 				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-				glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, 60);
+				glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, GLFW_DONT_CARE);
 			} else {
 				glfwSetWindowMonitor(window, NULL, windowedXPos, windowedYPos, windowedWidth, windowedHeight, GLFW_DONT_CARE);
 			}

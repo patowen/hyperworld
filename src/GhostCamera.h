@@ -86,11 +86,11 @@ private:
 		}
 
 		if (userInput.isPressed(KeyboardButton(GLFW_KEY_O))) {
-			zoom *= 0.964;
+			zoom *= std::pow(0.1, dt);
 		}
 
 		if (userInput.isPressed(KeyboardButton(GLFW_KEY_P))) {
-			zoom /= 0.964;
+			zoom *= std::pow(0.1, -dt);
 		}
 	}
 
