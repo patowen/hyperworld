@@ -16,8 +16,8 @@ Instructions on how to build this project can be found in the win-x64-static dir
 * <kbd>Q</kbd> and <kbd>E</kbd> Roll left and right.
 * <kbd>Left Shift</kbd> Toggle between fast and slow movement.
 * <kbd>Left Ctrl</kbd> Toggle between rotate and strafe mode.
-  * rotate mode: <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, and <kbd>D</kbd> rotate up, down, left, and right.
-  * pan mode: <kbd>W</kbd>,<kbd>S</kbd>, <kbd>A</kbd>, and <kbd>D</kbd> strafe up, down, left, and right.
+  * Rotate mode: <kbd>W</kbd>, <kbd>S</kbd>, <kbd>A</kbd>, and <kbd>D</kbd> rotate up, down, left, and right.
+  * Strafe mode: <kbd>W</kbd>,<kbd>S</kbd>, <kbd>A</kbd>, and <kbd>D</kbd> strafe up, down, left, and right.
 
 ### Rendering
 * <kbd>O</kbd> and <kbd>P</kbd> Increase and decrease FOV.
