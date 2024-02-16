@@ -1,5 +1,5 @@
 # Hyperworld
-[![image](https://github.com/millennIumAMbiguity/hyperworld/assets/37588844/d5073b5f-2d76-4ef0-8276-61d05f8e8f64)](https://youtu.be/Fkyq9AxCcBs?si=RGCMwWRw0cUjR2bO)
+[![image](https://github.com/patowen/hyperworld/assets/37588844/97efb41a-4ae8-4c1d-a4bb-3c935bf2614c)](https://youtu.be/Fkyq9AxCcBs?si=RGCMwWRw0cUjR2bO)
 
 This program is a work in progress, and a lot of design decisions are up in the
 air. The code lacks a lot of needed documentation, so please contact me (possibly by
