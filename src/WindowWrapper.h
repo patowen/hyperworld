@@ -31,6 +31,9 @@
 #include "SimpleRenderNode.h"
 #include "SimpleSpawner.h"
 
+#define GLT_IMPLEMENTATION
+#include "gltext.h"
+
 class ContextWrapper;
 
 class WindowWrapper {
@@ -88,6 +91,13 @@ public:
 		glEnable(GL_FRAMEBUFFER_SRGB);
 		glEnable(GL_CULL_FACE);
 
+		// Initialize glText
+		gltInit();
+
+		// Creating text
+		GLTtext *text = gltCreateText();
+
+
 		while (!glfwWindowShouldClose(window)) {
 			Vector2d mouseLook(0, 0);
 			if (isMouseCaptured()) {
@@ -119,11 +129,44 @@ public:
 			glViewport(0, 0, width, height);
 			context.setDimensions(width, height);
 			scene.render(context);
+
+			Eigen::Matrix4d pos = camera.getPos();
+			// Extracting the translation part (3D position vector)
+			Eigen::Vector3d position = pos.block<3,1>(0, 3);
+
+			// Convert the 3D vector to a string
+			std::ostringstream oss;
+			oss << position(0) << ", " << position(1) << ", " << position(2);
+			std::string positionStr = oss.str();
+
+			// Convert to char*
+			char* positionChar = new char[positionStr.length() + 1];
+			std::strcpy(positionChar, positionStr.c_str());
+			gltSetText(text, positionChar);
+
+			// Begin text drawing (this for instance calls glUseProgram)
+			gltBeginDraw();
+
+			// Draw any amount of text between begin and end
+			gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+			gltDrawText2D(text, 16, 16, 2);
+			delete[] positionChar;
+			// Finish drawing text
+
+			gltEndDraw();
 			glfwSwapInterval(1);
 			glfwSwapBuffers(window);
 
 			glfwPollEvents();
 		}
+
+
+		// Deleting text
+		gltDeleteText(text);
+
+		// Destroy glText
+		gltTerminate();
 	}
 
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
